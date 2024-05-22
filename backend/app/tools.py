@@ -1,6 +1,7 @@
+import os
 from enum import Enum
 from functools import lru_cache
-from typing import Optional
+from typing import Optional, Annotated
 
 from langchain.pydantic_v1 import BaseModel, Field
 from langchain.tools.retriever import create_retriever_tool
@@ -27,6 +28,15 @@ from typing_extensions import TypedDict
 
 from app.upload import vstore
 
+from langchain_core.tools import tool
+from datetime import datetime
+from app.datastat_wrap import *
+from app.meeting_tool import *
+from app.email_tool import reminder_reveiw_code
+from app.pull_tool import *
+import structlog
+
+logger = structlog.get_logger(__name__)
 
 class DDGInput(BaseModel):
     query: str = Field(description="search query to look up")
@@ -58,6 +68,16 @@ class AvailableTools(str, Enum):
     PUBMED = "pubmed"
     WIKIPEDIA = "wikipedia"
     DALL_E = "dall_e"
+    NOW_TIME_TOOL = "now_time_tool"
+    DATA_STAT_ALL_SIG = "data_state_all_sig"
+    DATA_STAT_SIG_DETAIL = "data_state_sig_detail"
+    DATA_STAT_CONTRIBUTE = "data_state_contribute"
+    MEET_GROUP = "meet_group"
+    MEET_INFO = "meet_info"
+    CREATE_MEET = "meet_create"
+    SEND_EMAIL = "send_email"
+    PULL_AUTHOER = "pull_auther"
+    PULL_DETAIL = "pull_detail"
 
 
 class ToolConfig(TypedDict):
@@ -198,6 +218,77 @@ class DallE(BaseTool):
         const=True,
     )
 
+class NowTime(BaseTool):
+    type: AvailableTools = Field(AvailableTools.NOW_TIME_TOOL, const=True)
+    name: str = Field("get now time", const=True)
+    description: str = Field(
+        "获取服务器的本地时间.",
+        const=True,
+    )
+
+class DataStateAllSig(BaseTool):
+    type: AvailableTools = Field(AvailableTools.DATA_STAT_ALL_SIG, const=True)
+    name: str = Field("get datastat all sig", const=True)
+    description: str = Field(
+        "社区服务运营数据集，可以查询所有的sig组.",
+        const=True,
+    )
+class DataStateSigDetail(BaseTool):
+    type: AvailableTools = Field(AvailableTools.DATA_STAT_SIG_DETAIL, const=True)
+    name: str = Field("get datastat sig detail", const=True)
+    description: str = Field(
+        "社区服务运营数据集，可以查询sig组详情，包括miantainer、committer等信息.",
+        const=True,
+    )
+class DataStateContribute(BaseTool):
+    type: AvailableTools = Field(AvailableTools.DATA_STAT_CONTRIBUTE, const=True)
+    name: str = Field("get datastat contribute", const=True)
+    description: str = Field(
+        "社区服务运营数据集，可以查询按 pr/issue/coment 维度的贡献值.",
+        const=True,
+    )
+class MeetGroup(BaseTool):
+    type: AvailableTools = Field(AvailableTools.MEET_GROUP, const=True)
+    name: str = Field("get all meeting sig group", const=True)
+    description: str = Field(
+        "获取会议系统的所有sig信息.",
+        const=True,
+    )
+class MeetInfo(BaseTool):
+    type: AvailableTools = Field(AvailableTools.MEET_INFO, const=True)
+    name: str = Field("get a sig meeting detail info", const=True)
+    description: str = Field(
+        "获取某个sig的会议预定详情.",
+        const=True,
+    )
+class MeetCreating(BaseTool):
+    type: AvailableTools = Field(AvailableTools.CREATE_MEET, const=True)
+    name: str = Field("create a meeting", const=True)
+    description: str = Field(
+        "通过输入信息在会议系统创建一个会议",
+        const=True,
+    )
+class SendEmail(BaseTool):
+    type: AvailableTools = Field(AvailableTools.SEND_EMAIL, const=True)
+    name: str = Field("send a email", const=True)
+    description: str = Field(
+        "通过email催促并通知committer或maintainer进行代码检视",
+        const=True,
+    )
+class PullAuthor(BaseTool):
+    type: AvailableTools = Field(AvailableTools.PULL_AUTHOER, const=True)
+    name: str = Field("get pull by author keyword", const=True)
+    description: str = Field(
+        "模糊搜索pull提交的人名",
+        const=True,
+    )
+class PullDetail(BaseTool):
+    type: AvailableTools = Field(AvailableTools.PULL_DETAIL, const=True)
+    name: str = Field("get pull detail info", const=True)
+    description: str = Field(
+        "获取PR的详情",
+        const=True,
+    )
 
 RETRIEVAL_DESCRIPTION = """Can be used to look up information that was uploaded to this assistant.
 If the user is referencing particular files, that is often a good hint that information may be here.
@@ -308,6 +399,56 @@ def _get_dalle_tools():
         "A wrapper around OpenAI DALL-E API. Useful for when you need to generate images from a text description. Input should be an image description.",
     )
 
+@tool
+def now_time_tool(
+    input: Annotated[str, "可以不用参数"] = ''
+):
+    """当您需要获取当前时间非常有效
+    """
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+def _get_now_time():
+    return now_time_tool
+
+@lru_cache(maxsize=1)
+def _get_datastat_sig_all():
+    logger.info("get_datastat_tools{} {}".format(os.getenv('DATASTAT_BASE_URL'), os.getenv('COMMUNITY')))
+    return query_community_all_sigs
+
+@lru_cache(maxsize=1)
+def _get_datastat_contribute():
+    return query_community_usercontribute
+
+@lru_cache(maxsize=3)
+def _get_datastat_sig_detail():
+    if os.getenv('COMMUNITY') != "opengauss":
+        return query_community_detail_info
+    else:
+        return read_readme_content
+
+@lru_cache(maxsize=1)
+def _get_meet_group():
+    return get_all_meeting_group
+
+@lru_cache(maxsize=1)
+def _get_meet_info():
+    return get_meetinfo_by_group
+
+@lru_cache(maxsize=1)
+def _create_a_meet():
+    return create_a_meeting
+
+@lru_cache(maxsize=1)
+def _send_a_email():
+    return reminder_reveiw_code
+
+@lru_cache(maxsize=3)
+def _get_pull_author():
+    return get_pulls_authors
+
+@lru_cache(maxsize=3)
+def _get_pull_detail():
+    return get_pulls_detail_info
 
 TOOLS = {
     AvailableTools.ACTION_SERVER: _get_action_server,
@@ -322,4 +463,14 @@ TOOLS = {
     AvailableTools.WIKIPEDIA: _get_wikipedia,
     AvailableTools.TAVILY_ANSWER: _get_tavily_answer,
     AvailableTools.DALL_E: _get_dalle_tools,
+    AvailableTools.NOW_TIME_TOOL: _get_now_time,
+    AvailableTools.DATA_STAT_ALL_SIG: _get_datastat_sig_all,
+    AvailableTools.DATA_STAT_SIG_DETAIL: _get_datastat_sig_detail,
+    AvailableTools.DATA_STAT_CONTRIBUTE: _get_datastat_contribute,
+    AvailableTools.MEET_GROUP: _get_meet_group,
+    AvailableTools.MEET_INFO: _get_meet_info,
+    AvailableTools.CREATE_MEET: _create_a_meet,
+    AvailableTools.SEND_EMAIL: _send_a_email,
+    AvailableTools.PULL_AUTHOER: _get_pull_author,
+    AvailableTools.PULL_DETAIL: _get_pull_detail,
 }

@@ -22,3 +22,8 @@ CREATE TABLE IF NOT EXISTS checkpoints (
     thread_id TEXT PRIMARY KEY,
     checkpoint BYTEA
 );
+
+CREATE TABLE IF NOT EXISTS pr_email (
+    email_key VARCHAR(255) PRIMARY KEY, -- 使用PR URL作为键
+    last_send_date TIMESTAMP WITH TIME ZONE NOT NULL -- 记录最后一次发送邮件的时间
+);

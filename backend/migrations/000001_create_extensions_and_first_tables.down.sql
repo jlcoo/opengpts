@@ -1,3 +1,4 @@
 DROP TABLE IF EXISTS thread;
 DROP TABLE IF EXISTS assistant;
 DROP TABLE IF EXISTS checkpoints;
+DROP TABLE IF EXISTS pr_email;

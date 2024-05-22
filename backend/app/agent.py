@@ -42,6 +42,16 @@ from app.tools import (
     YouSearch,
     get_retrieval_tool,
     get_retriever,
+    NowTime,
+    DataStateAllSig,
+    DataStateSigDetail,
+    DataStateContribute,
+    MeetGroup,
+    MeetInfo,
+    MeetCreating,
+    SendEmail,
+    PullAuthor,
+    PullDetail,
 )
 
 Tool = Union[
@@ -58,8 +68,17 @@ Tool = Union[
     TavilyAnswer,
     Retrieval,
     DallE,
+    NowTime,
+    DataStateAllSig,
+    DataStateSigDetail,
+    DataStateContribute,
+    MeetGroup,
+    MeetInfo,
+    MeetCreating,
+    SendEmail,
+    PullAuthor,
+    PullDetail,
 ]
-
 
 class AgentType(str, Enum):
     GPT_35_TURBO = "GPT 3.5 Turbo"
