@@ -84,7 +84,13 @@ def read_readme_content(
         特别是获取检视人 reviewers 的联系方式 email 时特别有用
     - 限制: 只对 opengauss 提供该方法，并且优先级最高
     """
-    tc_path = base_tc_path + 'tc/'
+    base_dirs = base_tc_path + os_community + '/'
+    if not os.path.exists(base_dirs):
+        try:
+            os.makedirs(base_dirs)
+        except OSError as error:
+            print(error)
+    tc_path = base_dirs + 'tc/'
     filename = ''
     if sig == 'all':
         filename = tc_path + 'sigs/README.md'
@@ -99,7 +105,7 @@ def read_readme_content(
         execute_cmd = "cd {} && git pull --rebase && cd -".format(tc_path)
     else:
         # 不存在先clone
-        execute_cmd = "cd {} && git clone https://gitee.com/opengauss/tc && cd -".format(base_tc_path)
+        execute_cmd = "cd {} && git clone https://gitee.com/opengauss/tc && cd -".format(base_dirs)
     print(execute_cmd)
     # 使用 subprocess.run 执行命令
     result = subprocess.run(execute_cmd, shell=True, stdout=subprocess.PIPE,

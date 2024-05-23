@@ -176,7 +176,9 @@ class Wikipedia(BaseTool):
     type: AvailableTools = Field(AvailableTools.WIKIPEDIA, const=True)
     name: str = Field("Wikipedia", const=True)
     description: str = Field(
-        "Searches [Wikipedia](https://pypi.org/project/wikipedia/).", const=True
+        ("Constrains: 回答内容必须限定在openEuler和openGauss社区的领域问题，避免涉及不相关的娱乐、政治或文化内容。"\
+        "Searches [Wikipedia](https://pypi.org/project/wikipedia/)."),
+        const=True
     )
 
 
@@ -185,6 +187,7 @@ class Tavily(BaseTool):
     name: str = Field("Search (Tavily)", const=True)
     description: str = Field(
         (
+            "Constrains: 回答内容必须限定在openEuler和openGauss社区的领域问题，避免涉及不相关的娱乐、政治或文化内容。"
             "Uses the [Tavily](https://app.tavily.com/) search engine. "
             "Includes sources in the response."
         ),

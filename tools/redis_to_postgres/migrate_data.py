@@ -20,7 +20,7 @@ from langgraph.checkpoint.base import (
 )
 from redis.client import Redis as RedisType
 
-from app.checkpoint import PostgresCheckpoint
+from app.checkpoint import PickleCheckpointSerializer, PostgresSaver
 from app.lifespan import get_pg_pool, lifespan
 from app.server import app
 
@@ -179,7 +179,10 @@ async def migrate_checkpoints() -> None:
     logger.info("Migrating checkpoints.")
 
     redis_checkpoint = RedisCheckpoint()
-    postgres_checkpoint = PostgresCheckpoint()
+    postgres_checkpoint = PostgresSaver(
+        serializer=PickleCheckpointSerializer(),
+        async_connection=get_pg_pool,
+    )
 
     for key in keys("opengpts:*:thread:*:checkpoint"):
         parts = key.split(":")

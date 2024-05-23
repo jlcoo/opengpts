@@ -7,14 +7,12 @@ from langchain_core.runnables import (
     ConfigurableField,
     RunnableBinding,
 )
-from langgraph.checkpoint import CheckpointAt
 from langgraph.graph.message import Messages
 from langgraph.pregel import Pregel
 
 from app.agent_types.tools_agent import get_tools_agent_executor
 from app.agent_types.xml_agent import get_xml_agent_executor
 from app.chatbot import get_chatbot_executor
-from app.checkpoint import PostgresCheckpoint
 from app.llms import (
     get_anthropic_llm,
     get_google_llm,
@@ -23,6 +21,11 @@ from app.llms import (
     get_openai_llm,
 )
 from app.retrieval import get_retrieval_executor
+from psycopg_pool import AsyncConnectionPool
+from app.checkpoint import (
+    PostgresCheckpoint, PickleCheckpointSerializer
+)
+import os
 from app.tools import (
     RETRIEVAL_DESCRIPTION,
     TOOLS,
@@ -93,7 +96,18 @@ class AgentType(str, Enum):
 
 DEFAULT_SYSTEM_MESSAGE = "You are a helpful assistant."
 
-CHECKPOINTER = PostgresCheckpoint(serde=pickle, at=CheckpointAt.END_OF_STEP)
+async_pool = AsyncConnectionPool(
+    # Example configuration
+    conninfo="postgresql://{}:{}@{}:{}/{}".format(os.environ["POSTGRES_USER"],
+        os.environ["POSTGRES_PASSWORD"], os.environ["POSTGRES_HOST"],
+        os.environ["POSTGRES_PORT"], os.environ["POSTGRES_DB"]),
+    max_size=20,
+)
+
+CHECKPOINTER = PostgresCheckpoint(
+    serial=PickleCheckpointSerializer(),
+    async_conn=async_pool,
+)
 
 
 def get_agent_executor(
