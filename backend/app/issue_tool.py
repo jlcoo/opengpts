@@ -4,7 +4,7 @@ import json
 from typing import Annotated
 from langchain_core.tools import tool
 
-base_issues_url = os.getenv('PULL_BASE_URL')
+base_issues_url = os.getenv('ISSUES_BASE_URL')
 
 @tool
 def get_issues_labels(
