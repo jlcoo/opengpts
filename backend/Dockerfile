@@ -25,10 +25,10 @@ RUN poetry config virtualenvs.create false \
     && poetry install --no-interaction --no-ansi
 
 
-RUN groupadd -g 1001 frontend \
-    && useradd -u 1001 -g frontend -s /bin/bash -m frontend \
-    && chown -R frontend:frontend /frontend \
-    && chmod -R 777 /frontend
+RUN groupadd -g 1001 backend \
+    && useradd -u 1001 -g backend -s /bin/bash -m backend \
+    && chown -R backend:backend /backend \
+    && chmod -R 777 /backend
 
 # Copy the rest of application code
 COPY . .
