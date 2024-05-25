@@ -95,10 +95,10 @@ def get_pulls_repos(
 
 @tool
 def get_pulls_detail_info(
-    org: Annotated[str, "Pull Request所属组织，比如openeuler."] = '',
+    org: Annotated[str, "Pull Request所属组织，比如openeuler/opengauss."] = os.getenv('COMMUNITY'),
     sig: Annotated[str, "PR的SIG\(Special Interest Groups\)组，比如sig-K8sDistro."] = '',
     repo: Annotated[str, "PR的所归属的项目或代码仓，比如openeuler/ft_mmi, repo需要加上openeuler前缀"] = '',
-    state: Annotated[str, "PR的当前的状态, 该值可以是open或merged, 默认不填."] = '',
+    state: Annotated[str, "PR的当前的状态, 该值可以是open、merged、closed, 默认不填."] = '',
     ref: Annotated[str, "Pull Request指定的分支."] = '',
     author: Annotated[str, "PR提交者，不为空时必须通过get_pulls_authors这个接口进行模糊查询，查询结果作为author的输入"] = '',
     assignee: Annotated[str, "PR的指派者, 比如caodongxia."] = '',

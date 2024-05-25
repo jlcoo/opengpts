@@ -34,7 +34,9 @@ from app.datastat_wrap import *
 from app.meeting_tool import *
 from app.email_tool import reminder_reveiw_code
 from app.pull_tool import *
+from app.issue_tool import *
 import structlog
+from langchain_community.document_loaders import WebBaseLoader
 
 logger = structlog.get_logger(__name__)
 
@@ -78,6 +80,10 @@ class AvailableTools(str, Enum):
     SEND_EMAIL = "send_email"
     PULL_AUTHOER = "pull_auther"
     PULL_DETAIL = "pull_detail"
+    PUBLIC_RETRIEVAL = "public_retrieval"
+    ISSUE_LABEL = "issue_label"
+    ISSUE_DETAIL = "issue_detail"
+    WEB_LOADER = "web_loader"
 
 
 class ToolConfig(TypedDict):
@@ -212,6 +218,10 @@ class Retrieval(BaseTool):
     name: str = Field("Retrieval", const=True)
     description: str = Field("Look up information in uploaded files.", const=True)
 
+class PublicRetrieval(BaseTool):
+    type: AvailableTools = Field(AvailableTools.PUBLIC_RETRIEVAL, const=True)
+    name: str = Field("PublicRetrieval", const=True)
+    description: str = Field("Look up information in public uploaded files", const=True)
 
 class DallE(BaseTool):
     type: AvailableTools = Field(AvailableTools.DALL_E, const=True)
@@ -293,16 +303,57 @@ class PullDetail(BaseTool):
         const=True,
     )
 
+class IssueLabel(BaseTool):
+    type: AvailableTools = Field(AvailableTools.ISSUE_LABEL, const=True)
+    name: str = Field("get issue  all label", const=True)
+    description: str = Field(
+        "issue标签列表",
+        const=True,
+    )
+
+class IssueDetail(BaseTool):
+    type: AvailableTools = Field(AvailableTools.ISSUE_DETAIL, const=True)
+    name: str = Field("get issue detail info", const=True)
+    description: str = Field(
+        "获取issue列表详情",
+        const=True,
+    )
+
+class WebLoader(BaseTool):
+    type: AvailableTools = Field(AvailableTools.WEB_LOADER, const=True)
+    name: str = Field("get web loader by url", const=True)
+    description: str = Field(
+        "爬取指定URL的内容，获取openGauss的社区贡献指南非常有用",
+        const=True,
+    )
+
 RETRIEVAL_DESCRIPTION = """Can be used to look up information that was uploaded to this assistant.
 If the user is referencing particular files, that is often a good hint that information may be here.
 If the user asks a vague question, they are likely meaning to look up info from this retriever, and you should call it!"""
+
+PUBLIC_RETRIEVAL_DES = """"
+- Role: openGauss社区贡献者和维护者信息检索专家
+- Background: 用户需要了解openGauss开源社区中特定项目的committer和maintainer信息。
+- Profile: 作为openGauss社区的资深成员，您对社区的贡献者和维护者信息有深入的了解。
+- Skills: 社区知识、信息检索、数据库管理、成员角色识别。
+- Goals: 提供openGauss社区中特定项目的committer和maintainer的详细信息。
+- Constrains: 确保提供的信息最新、最准确，并且遵守社区的隐私政策和信息披露规则，社区领域知识优先检索，未检索到的再调用其他工具
+- OutputFormat: 结合检索到的社区贡献者和维护者信息，生成详细的列表或描述。
+- Workflow:
+  1. 接收并分析用户关于特定项目committer和maintainer的查询请求。
+  2. 在社区数据库和文档中检索相关的贡献者和维护者信息。
+  3. 根据检索结果，生成包含姓名、贡献类型、活跃度等信息的详细列表。
+- Examples:
+  用户问题：Infra SIG 组的 Maintainer 是谁？
+  生成回答：根据查询结果，Infra SIG 组的 Maintainer 是钟君（@zhongjun2，jun.zhongjun2@gmail.com）。如果您有其他问题或需要进一步的信息，请随时告诉我！
+- Initialization: 欢迎咨询openGauss社区贡献者和维护者信息。请提供您想要查询的项目或版本，我将为您提供详细的信息。
+"""
 
 
 def get_retriever(assistant_id: str, thread_id: str):
     return vstore.as_retriever(
         search_kwargs={"filter": {"namespace": {"$in": [assistant_id, thread_id]}}}
     )
-
 
 @lru_cache(maxsize=5)
 def get_retrieval_tool(assistant_id: str, thread_id: str, description: str):
@@ -311,7 +362,6 @@ def get_retrieval_tool(assistant_id: str, thread_id: str, description: str):
         "Retriever",
         description,
     )
-
 
 @lru_cache(maxsize=1)
 def _get_duck_duck_go():
@@ -413,6 +463,20 @@ def now_time_tool(
 def _get_now_time():
     return now_time_tool
 
+@tool
+def web_loader(url: str) -> str:
+    """
+    抓取url对应网页的内容, openGauss贡献指导的URL为: https://opengauss.org/zh/contribution/detail.html
+    - 重要提示：获取贡献指南时，输出结果添加一句\"openGauss getting Started 更详细指南请参见: https://opengauss.org/zh/contribution\"
+    """
+    loader = WebBaseLoader(url)
+    docs = loader.load()
+    return docs[0].page_content
+
+@lru_cache(maxsize=1)
+def _get_web_loader():
+    return web_loader
+
 @lru_cache(maxsize=1)
 def _get_datastat_sig_all():
     logger.info("get_datastat_tools{} {}".format(os.getenv('DATASTAT_BASE_URL'), os.getenv('COMMUNITY')))
@@ -449,9 +513,17 @@ def _send_a_email():
 def _get_pull_author():
     return get_pulls_authors
 
-@lru_cache(maxsize=3)
+@lru_cache(maxsize=1)
 def _get_pull_detail():
     return get_pulls_detail_info
+
+@lru_cache(maxsize=3)
+def _get_issue_label():
+    return get_issues_labels
+
+@lru_cache(maxsize=1)
+def _get_issue_detail():
+    return get_issues_detail_info
 
 TOOLS = {
     AvailableTools.ACTION_SERVER: _get_action_server,
@@ -476,4 +548,8 @@ TOOLS = {
     AvailableTools.SEND_EMAIL: _send_a_email,
     AvailableTools.PULL_AUTHOER: _get_pull_author,
     AvailableTools.PULL_DETAIL: _get_pull_detail,
+    AvailableTools.PUBLIC_RETRIEVAL: get_retrieval_tool,
+    AvailableTools.ISSUE_LABEL: _get_issue_label,
+    AvailableTools.ISSUE_DETAIL: _get_issue_detail,
+    AvailableTools.WEB_LOADER: _get_web_loader,
 }

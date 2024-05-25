@@ -27,7 +27,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter, TextSplitte
 
 from app.ingest import ingest_blob
 from app.parsing import MIMETYPE_BASED_PARSER
-
+from app.load_docs import get_md_files_sections
 
 def _guess_mimetype(file_name: str, file_bytes: bytes) -> str:
     """Guess the mime-type of a file based on its name or bytes."""
@@ -143,6 +143,33 @@ class IngestRunnable(RunnableSerializable[BinaryIO, List[str]]):
         )
         return out
 
+    def invoke_markdown(self, config: Optional[RunnableConfig] = None):
+        all_sections = get_md_files_sections()
+        ids = []
+        docs_to_index = []
+        i = 0
+        total = 0
+        batch_size = 30
+        for sections in all_sections:
+            for doc in sections:
+                doc.metadata["namespace"] = "public"
+            # Creating an instance of Chroma with the sections and the embeddings
+            docs_to_index.extend(sections)
+            i = i + 1
+            if len(docs_to_index) >= batch_size:
+                try:
+                    ids.extend(self.vectorstore.add_documents(docs_to_index))
+                    docs_to_index = []
+                except Exception as e:
+                    print(e)
+                    continue
+                total = total + i
+                i = 0
+                print("embeddings ing, i: {} total: {}".format(i, total))
+
+        if docs_to_index:
+            ids.extend(self.vectorstore.add_documents(docs_to_index))
+        return ids
 
 PG_CONNECTION_STRING = PGVector.connection_string_from_db_params(
     driver="psycopg2",

@@ -44,6 +44,7 @@ from app.tools import (
     Wikipedia,
     YouSearch,
     get_retrieval_tool,
+    PUBLIC_RETRIEVAL_DES,
     get_retriever,
     NowTime,
     DataStateAllSig,
@@ -55,6 +56,10 @@ from app.tools import (
     SendEmail,
     PullAuthor,
     PullDetail,
+    PublicRetrieval,
+    IssueLabel,
+    IssueDetail,
+    WebLoader,
 )
 
 Tool = Union[
@@ -81,6 +86,10 @@ Tool = Union[
     SendEmail,
     PullAuthor,
     PullDetail,
+    PublicRetrieval,
+    IssueLabel,
+    IssueDetail,
+    WebLoader,
 ]
 
 class AgentType(str, Enum):
@@ -195,6 +204,10 @@ class ConfigurableAgent(RunnableBinding):
                     )
                 _tools.append(
                     get_retrieval_tool(assistant_id, thread_id, retrieval_description)
+                )
+            elif _tool["type"] == AvailableTools.PUBLIC_RETRIEVAL:
+                _tools.append(
+                    get_retrieval_tool("public", "public", PUBLIC_RETRIEVAL_DES)
                 )
             else:
                 tool_config = _tool.get("config", {})
@@ -359,7 +372,6 @@ chat_retrieval = (
         output_type=Dict[str, Any],
     )
 )
-
 
 agent: Pregel = (
     ConfigurableAgent(

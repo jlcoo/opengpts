@@ -86,7 +86,7 @@ async def reminder_reveiw_code(
         await put_pr_email(url)
     else:
         duration = now_date - last_premail[0]['last_send_date']
-        if duration < timedelta(days=1):
+        if duration < timedelta(days=1) and duration > timedelta(minutes=2):
             return "pr 地址 {} 已经在 {} 时刻发送过了通知检视人的邮件，请您耐心等待，如仍未处理，请一天后重试！"\
                     .format(url, last_premail[0]['last_send_date'])
     # config
@@ -120,7 +120,7 @@ async def reminder_reveiw_code(
             # smtp_obj.sendmail(sender, recipient, text)
             smtp_obj.sendmail(sender, "1417700745@qq.com", text)
         logger.info(f"Email sent to 检视人（{reviewer} {recipients}）")
-        if last_premail:
+        if last_premail and now_date - last_premail[0]['last_send_date'] > timedelta(minutes=2):
             await update_pr_email_time(url, now_date)
         return f"已向检视人：{reviewer}，发送PR检视提醒邮件成功，请您耐心等待！"
     except Exception as e:

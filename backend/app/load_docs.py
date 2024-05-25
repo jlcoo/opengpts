@@ -6,27 +6,40 @@ import markdown
 from typing import Annotated, List
 from fastapi import UploadFile
 from langchain_core.document_loaders.blob_loaders import Blob
-from app.upload import convert_ingestion_input_to_blob
+from langchain_community.document_loaders import UnstructuredMarkdownLoader
+import structlog
+from langchain_community.document_loaders import DirectoryLoader
+from langchain_community.document_loaders import UnstructuredMarkdownLoader
+from langchain.text_splitter import MarkdownHeaderTextSplitter
+from langchain_openai import OpenAIEmbeddings
+from langchain_community.vectorstores import Chroma
+from langchain_openai import ChatOpenAI
+from langchain.chains import ConversationalRetrievalChain
+import os
+
+logger = structlog.get_logger(__name__)
 
 base_tc_path = os.getenv('TC_REPO_PATH')
 os_community = os.getenv('COMMUNITY')
-
-def find_markdown_files(directory):
-    """
-    递归遍历目录并打印所有 Markdown 文件的绝对路径。
     
-    参数:
-    directory (str): 要遍历的根目录路径。
-    """
-    outpath = []
-    for root, dirs, files in os.walk(directory):
-        for file in files:
-            if file.endswith('.md'):
-                outpath.append(os.path.abspath(os.path.join(root, file)))
-                # print(os.path.abspath(os.path.join(root, file)))
-    return outpath
+def load_and_documents(directory_path):
+    glob_pattern="./*.md"
+    documents = []
+    all_sections = []
 
-def get_all_md_files():
+    loader = DirectoryLoader(directory_path, glob=glob_pattern, silent_errors=True, recursive=True, use_multithreading=True,
+                                show_progress=True, loader_cls=UnstructuredMarkdownLoader)
+    documents = loader.load()
+
+    headers_to_split_on = [("#", "Header 1"), ("##", "Header 2"), ("###", "Header 3"), ("####", "Header 4")]
+    text_splitter = MarkdownHeaderTextSplitter(headers_to_split_on=headers_to_split_on)
+    for doc in documents:
+        sections = text_splitter.split_text(doc.page_content)
+        all_sections.append(sections)
+    
+    return all_sections
+
+def get_md_files_sections():
     base_dirs = base_tc_path + os_community + '/'
     if not os.path.exists(base_dirs):
         try:
@@ -48,30 +61,8 @@ def get_all_md_files():
     if result.returncode != 0:
         raise RuntimeError("clone object failed, err:{}".format(result.stderr))
     
-    return find_markdown_files(tc_path)
+    sections = load_and_documents(tc_path)
 
-def get_blob_from_markdown():
-    blobs = []
-    md_path = get_all_md_files()
+    return sections
 
-    for markdown_file_path in md_path:
-        with open(markdown_file_path, 'r', encoding='utf-8') as file:
-            markdown_content = file.read()
 
-        # 确定文件类型 (Mime Type)
-        mime_type, _ = mimetypes.guess_type(markdown_file_path)
-        if not mime_type:
-            mime_type = 'text/markdown'  # 默认 Mime Type
-        html_text = markdown.markdown(md_text)
-        # 创建一个包含文件内容的 Blob 对象
-        # file_like_object = io.BytesIO(markdown_content)
-        file_like_object = io.BytesIO(html_text.encode('utf-8'))
-        mock_upload_file = UploadFile(
-            file=file_like_object,
-            filename=markdown_file_path,
-            # content_type='text/markdown',
-            # file_type="md"
-        )
-        blobs.append(convert_ingestion_input_to_blob(mock_upload_file))
-    
-    return blobs

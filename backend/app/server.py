@@ -13,7 +13,6 @@ from app.api import router as api_router
 from app.auth.handlers import AuthedUser
 from app.lifespan import lifespan
 from app.upload import convert_ingestion_input_to_blob, ingest_runnable
-from app.load_docs import get_blob_from_markdown
 
 logger = structlog.get_logger(__name__)
 
@@ -77,8 +76,7 @@ async def rag_files(
         if thread is None:
             raise HTTPException(status_code=404, detail="Thread not found.")
 
-    file_blobs = get_blob_from_markdown()
-    return ingest_runnable.batch(file_blobs, config)
+    return ingest_runnable.invoke_markdown(config)
 
 @app.get("/health")
 async def health() -> dict:

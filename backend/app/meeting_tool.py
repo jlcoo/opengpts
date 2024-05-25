@@ -57,7 +57,7 @@ def create_a_meeting(
     etherpad: Annotated[str, "文档编辑器"] = '',
 ):
     """在会议服务系统中，创建一个会议，需要指定时间、会议平台、sig组名称、会议议题."""
-    token = input("Enter valid token:")
+    # token = input("Enter valid token:")
     data = {
         'agenda': agenda,
         'date': date,
@@ -72,6 +72,7 @@ def create_a_meeting(
         'start': time_start,
         'topic': topic
     }
+    return "会议预定功能请移步到openGauss官网页面进行操作，会议系统在官网的社区会议板块，openGauss的官网地址为: https://opengauss.org/zh/"
     res = requests.post(url,
             headers={'Content-Type': 'application/json;charset=UTF-8',
                      'Authorization': 'Bearer {}'.format(token)},
