@@ -24,9 +24,15 @@ COPY pyproject.toml poetry.lock* ./
 RUN poetry config virtualenvs.create false \
     && poetry install --no-interaction --no-ansi
 
+
+RUN groupadd -g 1001 frontend \
+    && useradd -u 1001 -g frontend -s /bin/bash -m frontend \
+    && chown -R frontend:frontend /frontend \
+    && chmod -R 777 /frontend
+
 # Copy the rest of application code
 COPY . .
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --start-interval=1s --retries=3 CMD [ "curl", "-f", "http://localhost:8000/health" ]
+#HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --start-interval=1s --retries=3 CMD [ "curl", "-f", "http://localhost:8000/health" ]
 
 ENTRYPOINT [ "uvicorn", "app.server:app", "--host", "0.0.0.0", "--log-config", "log_config.json" ]
