@@ -35,11 +35,6 @@ class AvailableTools(str, Enum):
     TAVILY = "search_tavily"
     TAVILY_ANSWER = "search_tavily_answer"
     RETRIEVAL = "retrieval"
-    ARXIV = "arxiv"
-    YOU_SEARCH = "you_search"
-    SEC_FILINGS = "sec_filings_kai_ai"
-    PRESS_RELEASES = "press_releases_kai_ai"
-    PUBMED = "pubmed"
     WIKIPEDIA = "wikipedia"
     NOW_TIME_TOOL = "now_time_tool"
     DATA_STAT_ALL_SIG = "data_state_all_sig"
@@ -111,7 +106,7 @@ class Retrieval(BaseTool):
 class PublicRetrieval(BaseTool):
     type: AvailableTools = Field(AvailableTools.PUBLIC_RETRIEVAL, const=True)
     name: str = Field("PublicRetrieval", const=True)
-    description: str = Field("Look up information in public uploaded files", const=True)
+    description: str = Field("检索、搜索高优先级使用该工具，检索社区领域知识", const=True)
 
 class NowTime(BaseTool):
     type: AvailableTools = Field(AvailableTools.NOW_TIME_TOOL, const=True)
@@ -214,7 +209,7 @@ If the user is referencing particular files, that is often a good hint that info
 If the user asks a vague question, they are likely meaning to look up info from this retriever, and you should call it!"""
 
 PUBLIC_RETRIEVAL_DES = """"
-- Role: openGauss社区贡献者和维护者信息检索专家
+- Role: openGauss社区贡献者和维护者信息检索专家, 高优先级使用该搜索工具
 - Background: 用户需要了解openGauss开源社区中特定项目的committer和maintainer信息。
 - Profile: 作为openGauss社区的资深成员，您对社区的贡献者和维护者信息有深入的了解。
 - Skills: 社区知识、信息检索、数据库管理、成员角色识别。

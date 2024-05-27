@@ -85,7 +85,7 @@ def get_issues_detail_info(
     issue_type: Annotated[str, "issues的类型."] = '',
     search: Annotated[str, "issues的模糊搜索."] = '',
     page: Annotated[int, "获取的第几页数，默认1."] = 1,
-    per_page: Annotated[int, "每页能获取的数量，最大上限为100, 超过100需分页查询."] = 20,
+    per_page: Annotated[int, "每页能获取的数量，最大上限为50, 超过50需分页查询."] = 20,
 ) -> str:
     """
     - issue列表, 获取issue列表详情
@@ -113,6 +113,7 @@ def get_issues_detail_info(
     if ret.status_code == 200:
         data = ret.json()
     else:
-        raise Exception(f"API Request failed with status code: {ret.status_code}")
-    print(json.dumps(data))
+        # raise Exception(f"API Request failed with status code: {ret.status_code}")
+        return "参数错误，请重试，温馨提示，输入信息请尽量准确！status code: {}".format(ret.status_code)
+    # print(json.dumps(data))
     return data
