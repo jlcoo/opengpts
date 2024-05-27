@@ -19,6 +19,7 @@ WORKDIR /backend
 
 # Copy only dependencies
 COPY pyproject.toml poetry.lock* ./
+COPY install_tool.py ./
 
 # Install all dependencies
 RUN poetry config virtualenvs.create false \
@@ -29,6 +30,8 @@ RUN groupadd -g 1001 backend \
     && useradd -u 1001 -g backend -s /bin/bash -m backend \
     && chown -R backend:backend /backend \
     && chmod -R 777 /backend
+
+RUN python install_tool.py
 
 # Copy the rest of application code
 COPY . .
