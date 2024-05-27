@@ -197,6 +197,8 @@ def get_pulls_authors(
         }
         ```
     """
+    # 先直接 return,[TODO]接口OK后需要删除
+    return keyword
     global base_pulls_url
     url = base_pulls_url + "authors"
     # Parameters for the request
