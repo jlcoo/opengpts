@@ -198,7 +198,6 @@ def get_pulls_authors(
         ```
     """
     # 先直接 return,[TODO]接口OK后需要删除
-    return keyword
     global base_pulls_url
     url = base_pulls_url + "authors"
     # Parameters for the request
@@ -211,7 +210,8 @@ def get_pulls_authors(
     if ret.status_code == 200:
         data = ret.json()
     else:
-        return "参数错误，请重试，温馨提示，输入信息请尽量准确！status code: {}".format(ret.status_code)
+        # return "参数错误，请重试，温馨提示，输入信息请尽量准确！status code: {}".format(ret.status_code)
+        return keyword
     return data
 
 @tool

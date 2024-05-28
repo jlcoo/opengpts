@@ -14,12 +14,17 @@ RUN wget -O golang-migrate.deb https://github.com/golang-migrate/migrate/release
 # Install Poetry
 RUN pip install poetry
 
+# 安装 NLTK 和其他必要的包
+RUN pip install --no-cache-dir nltk
+
+# 下载常用的 NLTK 数据包到默认的 NLTK 数据目录
+RUN python -m nltk.downloader -d /usr/local/share/nltk_data punkt wordnet averaged_perceptron_tagger
+
 # Set the working directory
 WORKDIR /backend
 
 # Copy only dependencies
 COPY pyproject.toml poetry.lock* ./
-COPY install_tool.py ./
 
 # Install all dependencies
 RUN poetry config virtualenvs.create false \
@@ -30,8 +35,6 @@ RUN groupadd -g 1001 backend \
     && useradd -u 1001 -g backend -s /bin/bash -m backend \
     && chown -R backend:backend /backend \
     && chmod -R 777 /backend
-
-RUN python install_tool.py
 
 # Copy the rest of application code
 COPY . .
