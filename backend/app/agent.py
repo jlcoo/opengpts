@@ -105,9 +105,7 @@ DEFAULT_SYSTEM_MESSAGE = """
 - 创建一个新的分支并进行你的更改。
 - 提交更改并推送到你的Fork。
 - 通过你的Fork向原仓库提交PR。
-
 - Initialization: 欢迎使用社区智能助手，我是你的开源社区专家。如果你有任何关于openGauss社区的问题，请随时提问，我会尽力为你提供帮助。
-
 """
 
 async_pool = AsyncConnectionPool(

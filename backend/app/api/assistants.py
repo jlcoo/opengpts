@@ -1,15 +1,19 @@
 from typing import Annotated, List
 from uuid import uuid4
 
-from fastapi import APIRouter, HTTPException, Path
+from fastapi import APIRouter, HTTPException, Path, Request
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 import app.storage as storage
 from app.auth.handlers import AuthedUser
 from app.schema import Assistant
+from app.agent import DEFAULT_SYSTEM_MESSAGE
+import structlog
+from datetime import datetime, timezone
 
 router = APIRouter()
-
+logger = structlog.get_logger(__name__)
 
 class AssistantPayload(BaseModel):
     """Payload for creating an assistant."""
@@ -85,3 +89,94 @@ async def delete_assistant(
     """Delete an assistant by ID."""
     await storage.delete_assistant(user["user_id"], aid)
     return {"status": "ok"}
+
+async def _create_default_assistant(user_id: str, name: str) -> Assistant:
+    """create default assistant"""
+    # 复用 gitee_name 作为 assistant 的name
+    assistant_name = 'default_opengauss'
+    default_config = {
+        "configurable":{
+            "type":"agent",
+            "type==agent/agent_type":"GPT 3.5 Turbo",
+            "type==agent/interrupt_before_action": False,
+            "type==agent/retrieval_description":"Can be used to look up information that was uploaded to this assistant.\n"
+                "If the user is referencing particular files, that is often a good hint that information may be here.\n"
+                "If the user asks a vague question, they are likely meaning to look up info from this retriever, and you should call it!",
+            "type==agent/system_message":DEFAULT_SYSTEM_MESSAGE,
+                "type==agent/tools":[
+                    {"id":"e398297b-52f4-4652-834f-0cbcc879c170","type":"wikipedia","name":"Wikipedia",
+                     "description":"Constrains: 回答内容必须限定在openEuler和openGauss社区的领域问题，"
+                        "避免涉及不相关的娱乐、政治或文化内容。Searches [Wikipedia](https://pypi.org/project/wikipedia/).","config":{}},
+                    {"id":"cc7178e1-eb7c-4605-b26b-2a7d2c1fbe49","type":"search_tavily","name":"Search (Tavily)",
+                     "description":"Constrains: 回答内容必须限定在openEuler和openGauss社区的领域问题，避免涉及不相关的娱乐、政治或文化内容。"
+                     "Uses the [Tavily](https://app.tavily.com/) search engine. Includes sources in the response.","config":{}},
+                    {"id":"69ee470f-0135-432c-8ff7-6f0b29327213","type":"search_tavily_answer","name":"Search (short answer, Tavily)",
+                     "description":"Uses the [Tavily](https://app.tavily.com/) search engine. This returns only the answer,"
+                     " no supporting evidence.","config":{}},
+                    {"id":"cdc5957d-2bae-4986-9c63-1a14c8bf1bdf","type":"now_time_tool","name":"get now time",
+                      "description":"获取服务器的本地时间.","config":{}},
+                    {"id":"fb27364a-4eb2-45e2-82be-fe97021b072f","type":"data_state_all_sig","name":"get datastat all sig",
+                     "description":"社区服务运营数据集，可以查询所有的sig组.","config":{}},
+                    {"id":"1963637f-108f-46d2-a6b2-37a2a8bde269","type":"data_state_sig_detail","name":"get datastat sig detail",
+                     "description":"社区服务运营数据集，可以查询sig组详情，包括miantainer、committer等信息.","config":{}},
+                    {"id":"df688221-e464-4f1c-98b6-fb71d6dda6c0","type":"data_state_contribute","name":"get datastat contribute",
+                     "description":"社区服务运营数据集，可以查询按 pr/issue/coment 维度的贡献值.","config":{}},
+                    {"id":"183a807c-039c-4514-a449-d67a20020dc8","type":"meet_group","name":"get all meeting sig group",
+                     "description":"获取会议系统的所有sig信息.","config":{}},
+                    {"id":"93cdf5c8-122f-4a84-a259-b369a5a5a75c","type":"meet_info","name":"get a sig meeting detail info",
+                     "description":"获取某个sig的会议预定详情.","config":{}},
+                    {"id":"7896fc45-21da-4faf-9b15-724eadb75633","type":"meet_create","name":"create a meeting",
+                     "description":"通过输入信息在会议系统创建一个会议","config":{}},
+                    {"id":"792fdc30-64a0-4736-9739-b3d3b21f473e","type":"send_email","name":"send a email",
+                     "description":"通过email催促并通知committer或maintainer进行代码检视","config":{}},
+                    {"id":"bbba4b69-bb39-4187-8154-71e92bdd8918","type":"pull_auther","name":"get pull by author keyword",
+                     "description":"模糊搜索pull提交的人名","config":{}},
+                    {"id":"753b2f2c-127d-4f8a-8d72-748e1aba171e","type":"pull_detail","name":"get pull detail info",
+                     "description":"获取PR的详情","config":{}},
+                    {"id":"93b37073-bc95-48cb-95c7-262e34d04939","type":"public_retrieval","name":"PublicRetrieval",
+                     "description":"检索、搜索高优先级使用该工具，检索社区领域知识","config":{}},
+                    {"id":"e907bc04-8079-45ac-b650-1ee23f2ba3a4","type":"issue_label","name":"get issue  all label",
+                     "description":"issue标签列表","config":{}},
+                    {"id":"30bf879f-fd4c-43a3-bbac-ac5717d6e661","type":"issue_detail","name":"get issue detail info",
+                     "description":"获取issue列表详情","config":{}},
+                    {"id":"5acbe4a2-60a1-468c-a467-5c3ebda781ff","type":"web_loader","name":"get web loader by url",
+                     "description":"爬取指定URL的内容，获取openGauss的社区贡献指南非常有用","config":{}}],
+            "type==chat_retrieval/llm_type":"GPT 3.5 Turbo",
+            "type==chat_retrieval/system_message":DEFAULT_SYSTEM_MESSAGE
+        }
+    }
+    if name:
+        assistant_name = name
+    return await storage.put_assistant(
+        user_id,
+        str(uuid4()),
+        name=assistant_name,
+        config=default_config,
+        public=False,
+    )
+
+@router.post("/getorcreate")
+async def create_assistant(request: Request) -> Assistant:
+    """Get or Create an assistant."""
+    header = request.headers
+    try:
+        payload = await request.json()
+    except ValueError:
+        return JSONResponse(status_code=400, content={"message": "Invalid JSON payload"})
+    if 'user_name' not in payload or 'gitee_name' not in payload:
+        return JSONResponse(status_code=400, content={"message": "Missing 'user_name' or 'gitee_name' in payload"})
+    user_name = payload['user_name']
+    user, is_first = await storage.get_or_create_user(user_name)
+    logger.info("user:{}, is_first: {}".format(user, is_first))
+    try:
+        if is_first:
+            return await _create_default_assistant(user['user_id'], payload['gitee_name'])
+        else:
+            assistants = await storage.list_assistants(user["user_id"])
+            return assistants[0] 
+    except Exception as e:
+        await storage.delete_user(user["sub"], user["user_id"])
+        logger.info("Exception: {}".format(e))
+        return {'assistant_id': '', 'user_id': '', 'name': '', 'config': {},
+                'updated_at': datetime.now(timezone.utc), 'public': False}
+
