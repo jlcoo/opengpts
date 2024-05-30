@@ -177,6 +177,5 @@ async def create_assistant(request: Request) -> Assistant:
     except Exception as e:
         await storage.delete_user(user["sub"], user["user_id"])
         logger.info("Exception: {}".format(e))
-        return {'assistant_id': '', 'user_id': '', 'name': '', 'config': {},
-                'updated_at': datetime.now(timezone.utc), 'public': False}
+        return JSONResponse(status_code=400, content={"message": "get or create default assistant failed."})
 
