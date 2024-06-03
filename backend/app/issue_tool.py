@@ -65,8 +65,8 @@ def get_issues_labels(
     if ret.status_code == 200:
         data = ret.json()
     else:
-        raise Exception(f"API Request failed with status code: {ret.status_code}")
-    print(json.dumps(data))
+        # raise Exception(f"API Request failed with status code: {ret.status_code}")
+        return "参数错误，请重试，温馨提示，输入信息请尽量准确！status code: {}".format(ret.status_code)
     return data
 
 @tool

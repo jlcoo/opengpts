@@ -97,7 +97,7 @@ async def _create_default_assistant(user_id: str, name: str) -> Assistant:
     default_config = {
         "configurable":{
             "type":"agent",
-            "type==agent/agent_type":"GPT 3.5 Turbo",
+            "type==agent/agent_type":"GPT 4o",
             "type==agent/interrupt_before_action": False,
             "type==agent/retrieval_description":"Can be used to look up information that was uploaded to this assistant.\n"
                 "If the user is referencing particular files, that is often a good hint that information may be here.\n"
@@ -141,7 +141,7 @@ async def _create_default_assistant(user_id: str, name: str) -> Assistant:
                      "description":"获取issue列表详情","config":{}},
                     {"id":"5acbe4a2-60a1-468c-a467-5c3ebda781ff","type":"web_loader","name":"get web loader by url",
                      "description":"爬取指定URL的内容，获取openGauss的社区贡献指南非常有用","config":{}}],
-            "type==chat_retrieval/llm_type":"GPT 3.5 Turbo",
+            "type==chat_retrieval/llm_type":"GPT 4o",
             "type==chat_retrieval/system_message":DEFAULT_SYSTEM_MESSAGE
         }
     }

@@ -46,6 +46,7 @@ async def _run_input_and_config(payload: CreateRunPayload, user_id: str):
             "user_id": user_id,
             "thread_id": str(thread["thread_id"]),
             "assistant_id": str(assistant["assistant_id"]),
+            "assistant_name": str(assistant["name"]),
         },
     }
 
@@ -77,6 +78,10 @@ async def stream_run(
 ):
     """Create a run."""
     input_, config = await _run_input_and_config(payload, user["user_id"])
+    if input_ and input_[0] and '我' in input_[0].content:
+        addition = "gitee_name: {}".format(config['configurable']['assistant_name'])
+        input_[0].content = " ".join([input_[0].content, addition])
+    print(input_)
 
     return EventSourceResponse(to_sse(astream_state(agent, input_, config)))
 

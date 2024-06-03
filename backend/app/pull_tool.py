@@ -47,8 +47,8 @@ def get_pulls_labels(
     if ret.status_code == 200:
         data = ret.json()
     else:
-        raise Exception(f"API Request failed with status code: {ret.status_code}")
-    print(json.dumps(data))
+        # raise Exception(f"API Request failed with status code: {ret.status_code}")
+        return "参数错误，请重试，温馨提示，输入信息请尽量准确！status code: {}".format(ret.status_code)
     return data
 
 @tool
@@ -101,7 +101,6 @@ def get_pulls_detail_info(
     state: Annotated[str, "PR的当前的状态, 该值可以是open、merged、closed, 默认不填."] = '',
     ref: Annotated[str, "Pull Request指定的分支."] = '',
     author: Annotated[str, "PR提交者，不为空时必须通过get_pulls_authors这个接口进行模糊查询，查询结果作为author的输入"] = '',
-    assignee: Annotated[str, "PR的指派者, 比如caodongxia."] = '',
     label: Annotated[str, "PR的当前的标签, 比如sig/sig-nodejs."] = '',
     exclusion: Annotated[str, "需要过滤的PR标签, 比如sig/sig-ai."] = '',
     search: Annotated[str, "PR的模糊搜索."] = '',
@@ -113,6 +112,8 @@ def get_pulls_detail_info(
     - output: PR id地址为PR URL地址的数字
     """
     global base_pulls_url
+    if state == 'all':
+        state = ''
     url = base_pulls_url
     # Parameters for the request
     params = {
@@ -122,7 +123,6 @@ def get_pulls_detail_info(
         'state'      : state,
         'ref'        : ref,
         'author'     : author,
-        'assignee'   : assignee,
         'label'      : label,
         'exclusion'  : exclusion,
         'search'     : search,
@@ -138,13 +138,13 @@ def get_pulls_detail_info(
     return data
 
 @tool
-def get_pulls_assignees(
-    keyword: Annotated[str, "模糊匹配pull\(pr\)的指派者, 比如alex，默认不匹配."],
+def get_issue_assignees(
+    keyword: Annotated[str, "模糊匹配issue的指派者, 比如alex，默认不匹配."],
     page: Annotated[int, "获取的第几页数，默认1."] = 1,
     per_page: Annotated[int, "每页能获取的数量，默认每次获取20个, 最大上限为100, 超过100后需要做分页查询处理."] = 20,
 ):
     """
-    - 功能介绍: 获取所有Pull Request指派者的列表
+    - 功能介绍: 获取所有issue指派者的列表
     - URI: GET /pulls/assignees
     - 输出示例:
         {

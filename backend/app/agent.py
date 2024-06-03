@@ -10,6 +10,8 @@ from langchain_core.runnables import (
 from langgraph.graph.message import Messages
 from langgraph.pregel import Pregel
 
+from langchain_core.tracers.schemas import Run
+
 from app.agent_types.tools_agent import get_tools_agent_executor
 from app.agent_types.xml_agent import get_xml_agent_executor
 from app.chatbot import get_chatbot_executor
@@ -47,9 +49,14 @@ from app.tools import (
     SendEmail,
     PullAuthor,
     PullDetail,
+    PullLabel,
+    PullRepo,
+    PullBranch,
+    PullSig,
     PublicRetrieval,
     IssueLabel,
     IssueDetail,
+    IssueAssign,
     WebLoader,
 )
 
@@ -68,9 +75,14 @@ Tool = Union[
     SendEmail,
     PullAuthor,
     PullDetail,
+    PullLabel,
+    PullRepo,
+    PullBranch,
+    PullSig,
     PublicRetrieval,
     IssueLabel,
     IssueDetail,
+    IssueAssign,
     WebLoader,
 ]
 
@@ -376,6 +388,9 @@ chat_retrieval = (
     )
 )
 
+def fn_end(run_obj : Run):
+    print("run exec time", run_obj.end_time - run_obj.start_time)
+
 agent: Pregel = (
     ConfigurableAgent(
         agent=AgentType.GPT_35_TURBO,
@@ -412,6 +427,9 @@ agent: Pregel = (
     .with_types(
         input_type=Messages,
         output_type=Sequence[AnyMessage],
+    )
+    .with_listeners(
+        on_end=fn_end,
     )
 )
 

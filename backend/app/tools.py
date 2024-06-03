@@ -19,15 +19,13 @@ from typing_extensions import TypedDict
 
 from app.upload import vstore
 
-from langchain_core.tools import tool
-from datetime import datetime
 from app.datastat_wrap import *
 from app.meeting_tool import *
 from app.email_tool import reminder_reveiw_code
 from app.pull_tool import *
 from app.issue_tool import *
+from app.common_tool import *
 import structlog
-from langchain_community.document_loaders import WebBaseLoader
 
 logger = structlog.get_logger(__name__)
 
@@ -46,15 +44,20 @@ class AvailableTools(str, Enum):
     SEND_EMAIL = "send_email"
     PULL_AUTHOER = "pull_auther"
     PULL_DETAIL = "pull_detail"
+    PULL_LABEL = "pull_label"
+    PULL_REPO = "pull_repo"
+    PULL_REF = "pull_ref"
+    PULL_SIG = "pull_sig"
     PUBLIC_RETRIEVAL = "public_retrieval"
     ISSUE_LABEL = "issue_label"
     ISSUE_DETAIL = "issue_detail"
+    ISSUE_ASSIGN = "issue_assign"
     WEB_LOADER = "web_loader"
+    USER_INFO = "user_info"
 
 
 class ToolConfig(TypedDict):
     ...
-
 
 class BaseTool(BaseModel):
     type: AvailableTools
@@ -72,7 +75,6 @@ class Wikipedia(BaseTool):
         const=True
     )
 
-
 class Tavily(BaseTool):
     type: AvailableTools = Field(AvailableTools.TAVILY, const=True)
     name: str = Field("Search (Tavily)", const=True)
@@ -85,7 +87,6 @@ class Tavily(BaseTool):
         const=True,
     )
 
-
 class TavilyAnswer(BaseTool):
     type: AvailableTools = Field(AvailableTools.TAVILY_ANSWER, const=True)
     name: str = Field("Search (short answer, Tavily)", const=True)
@@ -96,7 +97,6 @@ class TavilyAnswer(BaseTool):
         ),
         const=True,
     )
-
 
 class Retrieval(BaseTool):
     type: AvailableTools = Field(AvailableTools.RETRIEVAL, const=True)
@@ -180,6 +180,46 @@ class PullDetail(BaseTool):
         const=True,
     )
 
+class PullLabel(BaseTool):
+    type: AvailableTools = Field(AvailableTools.PULL_LABEL, const=True)
+    name: str = Field("get pull label", const=True)
+    description: str = Field(
+        "获取PR的label信息",
+        const=True,
+    )
+
+class PullRepo(BaseTool):
+    type: AvailableTools = Field(AvailableTools.PULL_REPO, const=True)
+    name: str = Field("get pull repo", const=True)
+    description: str = Field(
+        "获取PR的代码仓repo, 可通过sig过滤",
+        const=True,
+    )
+
+class IssueAssign(BaseTool):
+    type: AvailableTools = Field(AvailableTools.ISSUE_ASSIGN, const=True)
+    name: str = Field("get issue assignee", const=True)
+    description: str = Field(
+        "获取issue的责任者",
+        const=True,
+    )
+
+class PullBranch(BaseTool):
+    type: AvailableTools = Field(AvailableTools.PULL_REF, const=True)
+    name: str = Field("get pull branch", const=True)
+    description: str = Field(
+        "模糊搜索PR的分支名",
+        const=True,
+    )
+
+class PullSig(BaseTool):
+    type: AvailableTools = Field(AvailableTools.PULL_SIG, const=True)
+    name: str = Field("get pull sig", const=True)
+    description: str = Field(
+        "模糊搜索PR的sig组",
+        const=True,
+    )
+
 class IssueLabel(BaseTool):
     type: AvailableTools = Field(AvailableTools.ISSUE_LABEL, const=True)
     name: str = Field("get issue  all label", const=True)
@@ -201,6 +241,14 @@ class WebLoader(BaseTool):
     name: str = Field("get web loader by url", const=True)
     description: str = Field(
         "爬取指定URL的内容，获取openGauss的社区贡献指南非常有用",
+        const=True,
+    )
+
+class UserInfo(BaseTool):
+    type: AvailableTools = Field(AvailableTools.USER_INFO, const=True)
+    name: str = Field("get user info", const=True)
+    description: str = Field(
+        "获取用户信息，主要是openGauss的用户名和gitee的用户名",
         const=True,
     )
 
@@ -252,33 +300,13 @@ def _get_tavily():
     tavily_search = TavilySearchAPIWrapper()
     return TavilySearchResults(api_wrapper=tavily_search, name="search_tavily")
 
-
 @lru_cache(maxsize=1)
 def _get_tavily_answer():
     tavily_search = TavilySearchAPIWrapper()
     return _TavilyAnswer(api_wrapper=tavily_search, name="search_tavily_answer")
 
-@tool
-def now_time_tool(
-    input: Annotated[str, "可以不用参数"] = ''
-):
-    """当您需要获取当前时间非常有效
-    """
-    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
 def _get_now_time():
     return now_time_tool
-
-@tool
-def web_loader(url: str) -> str:
-    """
-    抓取url对应网页的内容, openGauss贡献指导的URL为: https://opengauss.org/zh/contribution/detail.html
-    - 重要提示：获取贡献指南时，输出结果添加一句\"openGauss getting Started 更详细指南请参见: https://opengauss.org/zh/contribution\"
-    CLA签署指导的URL:https://clasign.osinfra.cn/sign/gitee_opengauss-1614047760000855378
-    """
-    loader = WebBaseLoader(url)
-    docs = loader.load()
-    return docs[0].page_content
 
 @lru_cache(maxsize=1)
 def _get_web_loader():
@@ -324,6 +352,26 @@ def _get_pull_author():
 def _get_pull_detail():
     return get_pulls_detail_info
 
+@lru_cache(maxsize=1)
+def _get_pull_label():
+    return get_pulls_labels
+
+@lru_cache(maxsize=1)
+def _get_pull_repo():
+    return get_pulls_repos
+
+@lru_cache(maxsize=1)
+def _get_issue_assign():
+    return get_issue_assignees
+
+@lru_cache(maxsize=1)
+def _get_pull_ref():
+    return get_pulls_refs
+
+@lru_cache(maxsize=1)
+def _get_pull_sig():
+    return get_pulls_sigs
+
 @lru_cache(maxsize=3)
 def _get_issue_label():
     return get_issues_labels
@@ -346,8 +394,14 @@ TOOLS = {
     AvailableTools.SEND_EMAIL: _send_a_email,
     AvailableTools.PULL_AUTHOER: _get_pull_author,
     AvailableTools.PULL_DETAIL: _get_pull_detail,
+    AvailableTools.PULL_LABEL: _get_pull_label,
+    AvailableTools.PULL_REPO: _get_pull_repo,
+    AvailableTools.PULL_REF: _get_pull_ref,
+    AvailableTools.PULL_SIG: _get_pull_sig,
     AvailableTools.PUBLIC_RETRIEVAL: get_retrieval_tool,
     AvailableTools.ISSUE_LABEL: _get_issue_label,
     AvailableTools.ISSUE_DETAIL: _get_issue_detail,
+    AvailableTools.ISSUE_ASSIGN: _get_issue_assign,
     AvailableTools.WEB_LOADER: _get_web_loader,
+    AvailableTools.USER_INFO: _get_web_loader,
 }

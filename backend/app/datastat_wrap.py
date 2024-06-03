@@ -4,6 +4,7 @@ import json
 from typing import Annotated, List
 from langchain_core.tools import tool, BaseTool
 import subprocess
+import threading
 
 datastat_base_url = os.getenv('DATASTAT_BASE_URL')
 os_community = os.getenv('COMMUNITY')
@@ -40,6 +41,10 @@ def query_community_usercontribute(
     - 功能介绍：获取所有开源社区下某个sig组，指定贡献范围(pr, issue, comment), 指定时间段的贡献值详情
     """
     url = datastat_base_url + 'usercontribute'
+    if sig == 'all':
+        return "需要先获取一下所有的sig组，并指定某个sig组进一个一个地查询，最多查10个sig, 没有查完的提示下一次回话继续查询"
+    if contributeType == 'all':
+        return "contributeType 只能填pr, issue和comment，需要一个一个地查询"
     params = {
         'sig': sig,
         'contributeType': contributeType,
@@ -48,7 +53,10 @@ def query_community_usercontribute(
     }
     ret = requests.get(url, params=params)
     if ret.status_code == 200:
-        data = ret.json()
+        try:
+            data = ret.json()
+        except Exception as e:
+            return "输入信息暂时无法处理，请重新调整输入再重试。"
     else:
         raise Exception(f"API Request failed with status code: {ret.status_code}")
     print(json.dumps(data))
@@ -69,14 +77,16 @@ def query_community_all_sigs(
     print("url{url} params{params}")
     ret = requests.get(url, params=params)
     if ret.status_code == 200:
-        data = ret.json()
+        try:
+            data = ret.json()
+        except Exception as e:
+            return "输入信息暂时无法处理，请重新调整输入再重试。"
     else:
         raise Exception(f"API Request failed with status code: {ret.status_code}")
     print(json.dumps(data))
     return data
 
-@tool
-def read_readme_content(
+def read_readme_content_(
     sig: Annotated[str, "指定该开源社区下的某个sig组, 如果没有指定就会返回该开源社区的所有信息."] = 'all',
 ):
     """
@@ -122,3 +132,16 @@ def read_readme_content(
 
     return content
 
+lock = threading.Lock()
+
+@tool
+def read_readme_content(
+    sig: Annotated[str, "指定该开源社区下的某个sig组, 如果没有指定就会返回该开源社区的所有信息."] = 'all',
+):
+    """
+    - 功能介绍：opengauss社区通过配置文件readme.md获取sig组下的详细内容，比如某个sig组下的maintainers、committers等详细信息，
+        特别是获取检视人 reviewers 的联系方式 email 时特别有用
+    - 限制: 只对 opengauss 提供该方法，并且优先级最高
+    """
+    with lock:
+        return read_readme_content_(sig)
