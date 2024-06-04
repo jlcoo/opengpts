@@ -64,7 +64,7 @@ async def get_current_time():
 async def reminder_reveiw_code(
     repo: Annotated[str, "代码仓库名"],
     url: Annotated[str, "pr 的url地址"],
-    # context: Annotated[str, "催更邮件的内容，需要通过PR详情生成邮件内容，必须带上带检视PR的URL"],
+    state: Annotated[str, "pr 的状态"],
     email: Annotated[str, "检视人的邮箱地址，最好通过社区详情接口获取对应检视人的联系方式"],
     pr_id: Annotated[str, "需要被检视的pr id"],
     title: Annotated[str, "需要被检视的pr内容概要"],
@@ -72,11 +72,13 @@ async def reminder_reveiw_code(
     developer: Annotated[str, "该PR的作者"] = '',
 ):
     """
-    功能: 当你有PR需要检视时，发邮件提醒committer帮忙检视非常有用, 
+    功能: 当你有PR需要检视时，发邮件提醒maintainer、committer帮忙检视非常有用, 
     推荐: 当有多个检视人需要被提醒时，reminder_reveiw_code 这个工具应该被多次调用,
     检视人联系方式获取: 需要调用自定义工具读 readme 文件或查询社区datastat sig detail获取
     限制: 相同PR的 url 地址，一天只能发送一次，帮我做这个工具的限制
     """
+    if state != 'open':
+        return "该PR的状态是 {}，请选择open状态的PR通知committer进行检视".format(state)
     if not is_valid_url(url):
         return "pr 地址{}不合法，请重新输入合法有效 PR 的 url 地址".format(url)
     now_date = await get_current_time()

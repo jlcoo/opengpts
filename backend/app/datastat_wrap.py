@@ -42,9 +42,12 @@ def query_community_usercontribute(
     """
     url = datastat_base_url + 'usercontribute'
     if sig == 'all':
-        return "需要先获取一下所有的sig组，并指定某个sig组进一个一个地查询，最多查10个sig, 没有查完的提示下一次回话继续查询"
+        return "需要先获取一下所有的sig组，并指定某个sig组进一个一个地查询，最多查15个sig, 没有查完的提示下一次回话继续查询"
     if contributeType == 'all':
         return "contributeType 只能填pr, issue和comment，需要一个一个地查询"
+    timeList = ['all', 'lastonemonth', 'lasthalfyear', 'lastoneyear']
+    if timeRange not in timeList:
+        timeRange = 'lastonemonth'
     params = {
         'sig': sig,
         'contributeType': contributeType,
@@ -55,11 +58,11 @@ def query_community_usercontribute(
     if ret.status_code == 200:
         try:
             data = ret.json()
+            data['data'] = data['data'][:20]
         except Exception as e:
             return "输入信息暂时无法处理，请重新调整输入再重试。"
     else:
         raise Exception(f"API Request failed with status code: {ret.status_code}")
-    print(json.dumps(data))
     return data
 
 @tool

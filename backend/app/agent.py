@@ -58,6 +58,7 @@ from app.tools import (
     IssueDetail,
     IssueAssign,
     WebLoader,
+    RecommendQuestion,
 )
 
 Tool = Union[
@@ -84,6 +85,7 @@ Tool = Union[
     IssueDetail,
     IssueAssign,
     WebLoader,
+    RecommendQuestion,
 ]
 
 class AgentType(str, Enum):

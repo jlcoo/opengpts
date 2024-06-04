@@ -23,6 +23,32 @@ def web_loader(url: str) -> str:
     return docs[0].page_content
 
 @tool
-def web_loader(url: str) -> str:
-    """当您需要获取当前时间非常有效
+def recommend_questions(scenes: Annotated[str, "输入推荐问题场景，比如 PR 相关问题"]) -> str:
+    """当您需要获取场景问答时，非常有用，会返回推荐问题, 保留该tool输出格式
     """
+    # 社区贡献
+    # 社区数据
+    # PR相关
+    pr_scenes = """
+    <div style="color:red">
+    1. 我最近提交的前5个PR是哪些？其中有几个还是处于open状态？
+    2. 有提交过PR记录的sig组有哪些？一共多少个？
+    3. 查询我最近一次提交的PR，并找到该PR对应SIG的maintainer和committer，发邮件催促maintainer检视该PR。
+    </div>
+    """
+    # Issue相关
+    # SIG信息
+    sig_scene = """
+    <div style="color:red">
+    1. 社区有哪些SIG组？
+    2. 社区有哪些SIG组最近一周有会议议程？
+    3. 最近一个月 QA SIG组最活跃的开发者是哪些人？
+    4. 检索一下某个sig组的maintainer和committer联系方式，比如检索infra sig组的maintainer和committer联系方式
+    </div>
+    """
+
+    if 'SIG' in scenes or 'sig' in scenes:
+        return sig_scene
+    elif 'PR' in scenes or 'pr' in scenes:
+        return pr_scenes
+    return "推荐一些通用问题"

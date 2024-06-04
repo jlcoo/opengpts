@@ -53,7 +53,7 @@ class AvailableTools(str, Enum):
     ISSUE_DETAIL = "issue_detail"
     ISSUE_ASSIGN = "issue_assign"
     WEB_LOADER = "web_loader"
-    USER_INFO = "user_info"
+    RECOMMEND_QUESTION = "recommend_question"
 
 
 class ToolConfig(TypedDict):
@@ -244,11 +244,11 @@ class WebLoader(BaseTool):
         const=True,
     )
 
-class UserInfo(BaseTool):
-    type: AvailableTools = Field(AvailableTools.USER_INFO, const=True)
-    name: str = Field("get user info", const=True)
+class RecommendQuestion(BaseTool):
+    type: AvailableTools = Field(AvailableTools.RECOMMEND_QUESTION, const=True)
+    name: str = Field("get recommend question", const=True)
     description: str = Field(
-        "获取用户信息，主要是openGauss的用户名和gitee的用户名",
+        "获取自定义推荐的问题，根据输入场景进行推荐",
         const=True,
     )
 
@@ -311,6 +311,10 @@ def _get_now_time():
 @lru_cache(maxsize=1)
 def _get_web_loader():
     return web_loader
+
+@lru_cache(maxsize=1)
+def _get_recommend_questions():
+    return recommend_questions
 
 @lru_cache(maxsize=1)
 def _get_datastat_sig_all():
@@ -403,5 +407,5 @@ TOOLS = {
     AvailableTools.ISSUE_DETAIL: _get_issue_detail,
     AvailableTools.ISSUE_ASSIGN: _get_issue_assign,
     AvailableTools.WEB_LOADER: _get_web_loader,
-    AvailableTools.USER_INFO: _get_web_loader,
+    AvailableTools.RECOMMEND_QUESTION: _get_recommend_questions,
 }
