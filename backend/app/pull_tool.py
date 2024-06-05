@@ -182,7 +182,7 @@ def get_pulls_refs(
 
 @tool
 def get_pulls_sigs(
-    keyword: Annotated[str, "模糊匹配pull\(pr\)的sig组, 比如alex，默认不匹配，获取PR记录的SIG组非常有用."] = '',
+    keyword: Annotated[str, "模糊匹配pull\(pr\)的sig组, 输入不能是人名,只能是可能存在的sig组."] = '',
 ):
     """
     - 功能介绍: 获取有PR记录的所有SIG的列表，获取SIG列表优先被调用

@@ -35,10 +35,12 @@ def query_community_detail_info(
 def query_community_usercontribute(
     sig: Annotated[str, "指定该开源社区下的某个sig组."],
     contributeType: Annotated[str, "开发者贡献类型，可以是pr(合并请求)、issue(需求&问题)、comment(评审)."] = 'pr',
-    timeRange: Annotated[str, "指定某个时间范围段，可以是all、lastonemonth、lasthalfyear、lastoneyear."] = 'all',
+    timeRange: Annotated[str, "时间范围段，取值为'all','last_month','last_year','last_6_months'其中一个."] = 'all',
+    filter_num: Annotated[int, "过滤贡献值个数."] = 3,
 ):
     """
     - 功能介绍：获取所有开源社区下某个sig组，指定贡献范围(pr, issue, comment), 指定时间段的贡献值详情
+    - 提示: 贡献值使用输出中contribute进行评判
     """
     url = datastat_base_url + 'usercontribute'
     if sig == 'all':
@@ -47,7 +49,14 @@ def query_community_usercontribute(
         return "contributeType 只能填pr, issue和comment，需要一个一个地查询"
     timeList = ['all', 'lastonemonth', 'lasthalfyear', 'lastoneyear']
     if timeRange not in timeList:
-        timeRange = 'lastonemonth'
+        if timeRange == "last_month":
+            timeRange = 'lastonemonth'
+        elif timeRange == "last_year":
+            timeRange = 'lastoneyear'
+        elif '6' in timeRange:
+            timeRange = 'lasthalfyear'
+        else:
+            timeRange = 'lastonemonth'
     params = {
         'sig': sig,
         'contributeType': contributeType,
@@ -60,7 +69,10 @@ def query_community_usercontribute(
             data = ret.json()
             if not data['data']:
                 return '调用query_community_all_sigs工具匹配{}相关的sig组'.format(sig)
-            data['data'] = data['data'][:20]
+            filtered_data = [user for user in data['data'] if user['contribute'] >= filter_num]
+            # print(data['data'])
+            sorted_data = sorted(filtered_data, key=lambda x: x['contribute'], reverse=True)
+            data['data'] = sorted_data[:20]
         except Exception as e:
             return "输入信息暂时无法处理，请重新调整输入再重试。"
     else:
