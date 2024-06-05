@@ -58,6 +58,8 @@ def query_community_usercontribute(
     if ret.status_code == 200:
         try:
             data = ret.json()
+            if not data['data']:
+                return '调用query_community_all_sigs工具匹配{}相关的sig组'.format(sig)
             data['data'] = data['data'][:20]
         except Exception as e:
             return "输入信息暂时无法处理，请重新调整输入再重试。"

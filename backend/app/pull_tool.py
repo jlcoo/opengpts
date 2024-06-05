@@ -14,26 +14,6 @@ def get_pulls_labels(
 ) -> str:
     """
     - Pull Request标签列表
-    - 功能介绍
-        获取所有Pull Request的标签列表
-    - URI
-        GET /pulls/labels
-    - 示例
-        输入示例
-        ```
-        GET https://ipb.osinfra.cn/pulls/labels?keyword=kind
-        ```
-        输出示例
-        ```
-        {
-        "total": q,
-        "page": 1,
-        "per_page": 20,
-        "data": [
-            "kind/bug",
-        ]
-        }
-        ```
     """
     global base_pulls_url
     url = base_pulls_url + "labels"
@@ -60,20 +40,6 @@ def get_pulls_repos(
 ):
     """
     - 功能介绍: 获取所有Pull Request的仓库列表
-    - URI: GET /pulls/repos
-    - 输入示例: https://ipb.osinfra.cn/pulls/repos?sig=tc
-    - 输出示例:
-        ```
-        {
-        "total": 2,
-        "page": 1,
-        "per_page": 10,
-        "data": [
-            "openeuler/community",
-            "openeuler/TC"
-        ]
-        }
-        ```
     """
     global base_pulls_url
     url = base_pulls_url + "repos"
@@ -95,8 +61,8 @@ def get_pulls_repos(
 
 @tool
 def get_pulls_detail_info(
+    sig: Annotated[str, "PR的SIG组，比如Infra."],
     org: Annotated[str, "Pull Request所属组织，比如openeuler/opengauss."] = os.getenv('COMMUNITY'),
-    sig: Annotated[str, "PR的SIG\(Special Interest Groups\)组，比如sig-K8sDistro."] = '',
     repo: Annotated[str, "PR的所归属的项目或代码仓，比如openeuler/ft_mmi, repo需要加上openeuler前缀"] = '',
     state: Annotated[str, "PR的当前的状态, 该值可以是open、merged、closed, 默认不填."] = '',
     ref: Annotated[str, "Pull Request指定的分支."] = '',
@@ -105,13 +71,15 @@ def get_pulls_detail_info(
     exclusion: Annotated[str, "需要过滤的PR标签, 比如sig/sig-ai."] = '',
     search: Annotated[str, "PR的模糊搜索."] = '',
     page: Annotated[int, "获取的第几页数，默认1."] = 1,
-    per_page: Annotated[int, "每页能获取的数量，最大上限为100, 超过100需分页查询."] = 20,
+    per_page: Annotated[int, "每页能获取的数量，最大上限为100, 超过100需分页查询."] = 2,
 ) -> str:
     """
     - 功能介绍: 获取所有开源社区组织下仓库的Pull Request列表，需要放回PR地址
     - output: PR id地址为PR URL地址的数字
     """
     global base_pulls_url
+    if sig == 'all':
+        return "先调用get_pulls_sig获取所有sig组，再将per_page设置为1调用get_pulls_detail_info"
     if state == 'all':
         state = ''
     url = base_pulls_url
@@ -134,7 +102,6 @@ def get_pulls_detail_info(
         data = ret.json()
     else:
         raise Exception(f"API Request failed with status code: {ret.status_code}")
-    print(json.dumps(data))
     return data
 
 @tool
@@ -145,18 +112,6 @@ def get_issue_assignees(
 ):
     """
     - 功能介绍: 获取所有issue指派者的列表
-    - URI: GET /pulls/assignees
-    - 输出示例:
-        {
-        "total": 2,
-        "page": 1,
-        "per_page": 20,
-        "data": [
-            "AlexZ11",
-            "alexanderbill"
-        ]
-        }
-        ```
     """
     global base_pulls_url
     url = base_pulls_url + "assignees"
@@ -182,20 +137,6 @@ def get_pulls_authors(
 ):
     """
       - 功能介绍: 获取所有Pull Request提交人的列表, 有PR作者(authors)时，这个可接需要有限被模糊查询调用
-      - URI: GET /pulls/authors
-      - 输出示例:
-        ```
-        {
-          "total": 67,
-          "page": 1,
-          "per_page": 20,
-          "data": [
-            "a_night_of_baldness",
-            "alapha",
-            "albert-lee-7",
-          ]
-        }
-        ```
     """
     # 先直接 return,[TODO]接口OK后需要删除
     global base_pulls_url
@@ -222,22 +163,6 @@ def get_pulls_refs(
 ):
     """
     - 功能介绍: 获取所有Pull Request的分支列表
-    - URI: GET /pulls/refs
-    - 输出示例
-        ```
-        {
-        "total": 5,
-        "page": 1,
-        "per_page": 10,
-        "data": [
-            "Multi-Version_obs-server-2.10.11_openEuler-22.09",
-            "openEuler-22.09",
-            "openEuler-22.09-HCK",
-            "openEuler-22.09-next",
-            "sync-pr214-openEuler-22.03-LTS-to-openEuler-22.09"
-        ]
-        }
-        ```
     """
     global base_pulls_url
     url = base_pulls_url + "refs"
@@ -261,30 +186,13 @@ def get_pulls_sigs(
 ):
     """
     - 功能介绍: 获取有PR记录的所有SIG的列表，获取SIG列表优先被调用
-    - URI: GET /pulls/sigs
-    - 输出示例:
-    ```
-    {
-        "code": 200,
-        "msg": "请求成功",
-        "data": [
-        "Compiler",
-        "Computing",
-        "security-committee",
-        "sig-compat-winapp",
-        "sig-Compatibility-Infra",
-        "sig-compliance",
-        "sig-confidential-computing",
-        "user-committee"
-        ]
-    }
     """
     global base_pulls_url
+    params = {}
+    if keyword and keyword != 'all':
+        params['keyword'] = keyword
     url = base_pulls_url + "sigs"
-    # Parameters for the request
-    params = {
-        'keyword': keyword,
-    }
+
     ret = requests.get(url, params=params)
     if ret.status_code == 200:
         data = ret.json()

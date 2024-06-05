@@ -8,11 +8,15 @@ base_meeting_url = os.getenv('MEET_BASE_URL')
 
 @tool
 def get_meetinfo_by_group(
-    group: Annotated[str, "获取会议信息的过滤参数，主要通过sig组条件查询，比如CloudNative, 默认为空."] = '',
+    group: Annotated[str, "指定sig,查看该sig组的会议议程详细."] = '',
+    day: Annotated[int, "会议系统最新的天数."] = 5,
 ):
     """
-    - 功能描述: 查询社区的会议列表信息和会议详情, 当group为空时，将查询全部会议信息
+    - 约束: 如果上下文有时间信息，先调用now_time_tool获取一下当前时间
+    - 推荐: 调用前通过get_all_meeting_group工具查询一下group的准确性
     """
+    if group == 'all':
+        group = ''
     url = base_meeting_url + 'meetingsdata/'
     params = {
         'group': group,
@@ -20,9 +24,10 @@ def get_meetinfo_by_group(
     ret = requests.get(url, params=params)
     if ret.status_code == 200:
         data = ret.json()
+        print(data)
+        data['tableData'] = data['tableData'][-day:]
     else:
         raise Exception(f"API Request failed with status code: {ret.status_code}")
-    print(json.dumps(data))
     return data
 
 @tool

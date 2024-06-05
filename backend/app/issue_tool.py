@@ -14,45 +14,6 @@ def get_issues_labels(
 ) -> str:
     """
     - issue标签列表
-    - 功能介绍
-
-        获取issue所有标签的列表
-    - URI
-
-        GET /issues/labels
-    - 请求参数
-        | 参数 | 是否必选 | 参数类型 | 描述
-        | :---: | :---: | :---: | :---
-        | keyword | 否 | string | 模糊匹配issue的标签
-        | page | 否 | int | 页数，默认1
-        | per_page | 否 | int | 每页数量，默认10，最大100
-    - 示例
-
-        输入示例
-        ```
-        GET https://ipb.osinfra.cn/issues/labels?page=2&per_page=10
-        ```
-
-        输出示例
-        ```
-        {
-        "total": 167,
-        "page": 2,
-        "per_page": 10,
-        "data": [
-            "sig/sig-RaspberryPi",
-            "issue_feature",
-            "kind/design",
-            "priority/high",
-            "sig/A-Tune",
-            "sig/Application",
-            "sig/Base-service",
-            "sig/DB",
-            "sig/iSulad",
-            "sig/Networking"
-        ]
-        }
-        ```
     """
     url = base_issues_url + "labels"
     # Parameters for the request

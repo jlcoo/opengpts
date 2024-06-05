@@ -94,6 +94,10 @@ async def _create_default_assistant(user_id: str, name: str) -> Assistant:
     """create default assistant"""
     # 复用 gitee_name 作为 assistant 的name
     assistant_name = 'default_opengauss'
+    self_info = ""
+    if name:
+        assistant_name = name
+        self_info = "我的gitee_name为:" + name
     default_config = {
         "configurable":{
             "type":"agent",
@@ -102,7 +106,7 @@ async def _create_default_assistant(user_id: str, name: str) -> Assistant:
             "type==agent/retrieval_description":"Can be used to look up information that was uploaded to this assistant.\n"
                 "If the user is referencing particular files, that is often a good hint that information may be here.\n"
                 "If the user asks a vague question, they are likely meaning to look up info from this retriever, and you should call it!",
-            "type==agent/system_message":DEFAULT_SYSTEM_MESSAGE,
+            "type==agent/system_message":DEFAULT_SYSTEM_MESSAGE + self_info,
                 "type==agent/tools":[
                     {"id":"1","type":"wikipedia","name":"Wikipedia",
                      "description":"Constrains: 回答内容必须限定在openEuler和openGauss社区的领域问题，"
@@ -144,11 +148,9 @@ async def _create_default_assistant(user_id: str, name: str) -> Assistant:
                     {"id":"18","type":"recommend_question","name":"get recommend question",
                      "description":"获取自定义推荐的问题，根据输入场景进行推荐","config":{}}],
             "type==chat_retrieval/llm_type":"GPT 3.5 Turbo",
-            "type==chat_retrieval/system_message":DEFAULT_SYSTEM_MESSAGE
+            "type==chat_retrieval/system_message":DEFAULT_SYSTEM_MESSAGE + self_info
         }
     }
-    if name:
-        assistant_name = name
     return await storage.put_assistant(
         user_id,
         str(uuid4()),
