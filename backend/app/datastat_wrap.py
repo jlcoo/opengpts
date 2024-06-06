@@ -100,7 +100,7 @@ def query_community_all_sigs(
     return data
 
 def read_readme_content_(
-    sig: Annotated[str, "指定该开源社区下的某个sig组, 如果没有指定就会返回该开源社区的所有信息."] = 'all',
+    sig: Annotated[str, "指定该开源社区下的某个sig组, 比如Infra."] = 'all',
 ):
     """
     - 功能介绍：opengauss社区通过配置文件readme.md获取sig组下的详细内容，比如某个sig组下的maintainers、committers等详细信息，
@@ -137,7 +137,8 @@ def read_readme_content_(
         raise RuntimeError("clone object failed, err:{}".format(result.stderr))
 
     if not os.path.exists(filename):
-        return "该 {} {} 在 https://gitee.com/opengauss/tc 不存在，结束该轮对话，请重新输入".format(sig, filename)
+        return "该 {} {} 在 https://gitee.com/opengauss/tc 不存在，先调用query_community_all_sigs"\
+               "忽略大小写匹配该sig组，如果还是未能匹配上结束该轮对话，请重新输入".format(sig, filename)
 
     # 打开文件并读取内容
     with open(filename, 'r', encoding='utf-8') as file:
