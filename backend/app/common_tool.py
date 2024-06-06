@@ -59,5 +59,6 @@ def gitee_user_tool(
 ):
     """当您需要获取个人信息时非常有用,比如回答我是谁时, 通过返回值输出分析并得出正确的结果
     output: 您的Gitee用户名为: jl-brother1
+    限制:仅限于上下文有我的字符才能调用该工具
     """
     return "您的Gitee用户名为: {}".format(gitee_name)
