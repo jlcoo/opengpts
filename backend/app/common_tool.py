@@ -52,3 +52,12 @@ def recommend_questions(scenes: Annotated[str, "输入推荐问题场景，比�
     elif 'PR' in scenes or 'pr' in scenes:
         return pr_scenes
     return "推荐一些通用问题"
+
+@tool
+def gitee_user_tool(
+    gitee_name: Annotated[str, "从系统提示语中获取gitee_name返回"]
+):
+    """当您需要获取个人信息时非常有用,比如回答我是谁时, 通过返回值输出分析并得出正确的结果
+    output: 您的Gitee用户名为: jl-brother1
+    """
+    return "您的Gitee用户名为: {}".format(gitee_name)

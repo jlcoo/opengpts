@@ -54,6 +54,7 @@ class AvailableTools(str, Enum):
     ISSUE_ASSIGN = "issue_assign"
     WEB_LOADER = "web_loader"
     RECOMMEND_QUESTION = "recommend_question"
+    GITEE_INFO = "gitee_info"
 
 
 class ToolConfig(TypedDict):
@@ -252,6 +253,14 @@ class RecommendQuestion(BaseTool):
         const=True,
     )
 
+class GiteeInfo(BaseTool):
+    type: AvailableTools = Field(AvailableTools.GITEE_INFO, const=True)
+    name: str = Field("get gitee user info", const=True)
+    description: str = Field(
+        "获取gitee的用户信息，当问我是谁时特别有用",
+        const=True,
+    )
+
 RETRIEVAL_DESCRIPTION = """Can be used to look up information that was uploaded to this assistant.
 If the user is referencing particular files, that is often a good hint that information may be here.
 If the user asks a vague question, they are likely meaning to look up info from this retriever, and you should call it!"""
@@ -384,6 +393,10 @@ def _get_issue_label():
 def _get_issue_detail():
     return get_issues_detail_info
 
+@lru_cache(maxsize=1)
+def _get_gitee_user():
+    return gitee_user_tool
+
 TOOLS = {
     AvailableTools.TAVILY: _get_tavily,
     AvailableTools.WIKIPEDIA: _get_wikipedia,
@@ -408,4 +421,5 @@ TOOLS = {
     AvailableTools.ISSUE_ASSIGN: _get_issue_assign,
     AvailableTools.WEB_LOADER: _get_web_loader,
     AvailableTools.RECOMMEND_QUESTION: _get_recommend_questions,
+    AvailableTools.GITEE_INFO: _get_gitee_user,
 }

@@ -55,7 +55,6 @@ def get_pulls_repos(
         data = ret.json()
     else:
         raise Exception(f"API Request failed with status code: {ret.status_code}")
-    print(json.dumps(data))
     return data
 
 
@@ -126,7 +125,6 @@ def get_issue_assignees(
         data = ret.json()
     else:
         raise Exception(f"API Request failed with status code: {ret.status_code}")
-    print(json.dumps(data))
     return data
 
 @tool
@@ -177,7 +175,6 @@ def get_pulls_refs(
         data = ret.json()
     else:
         raise Exception(f"API Request failed with status code: {ret.status_code}")
-    print(json.dumps(data))
     return data
 
 @tool

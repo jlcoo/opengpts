@@ -28,7 +28,6 @@ def query_community_detail_info(
         data = ret.json()
     else:
         raise Exception(f"API Request failed with status code: {ret.status_code}")
-    print(json.dumps(data))
     return data
 
 @tool
@@ -70,7 +69,6 @@ def query_community_usercontribute(
             if not data['data']:
                 return '调用query_community_all_sigs工具匹配{}相关的sig组'.format(sig)
             filtered_data = [user for user in data['data'] if user['contribute'] >= filter_num]
-            # print(data['data'])
             sorted_data = sorted(filtered_data, key=lambda x: x['contribute'], reverse=True)
             data['data'] = sorted_data[:20]
         except Exception as e:
@@ -91,7 +89,6 @@ def query_community_all_sigs(
     params = {
         'community': os_community,
     }
-    print("url{url} params{params}")
     ret = requests.get(url, params=params)
     if ret.status_code == 200:
         try:
@@ -100,7 +97,6 @@ def query_community_all_sigs(
             return "输入信息暂时无法处理，请重新调整输入再重试。"
     else:
         raise Exception(f"API Request failed with status code: {ret.status_code}")
-    print(json.dumps(data))
     return data
 
 def read_readme_content_(
@@ -133,7 +129,7 @@ def read_readme_content_(
     else:
         # 不存在先clone
         execute_cmd = "cd {} && git clone https://gitee.com/opengauss/tc && cd -".format(base_dirs)
-    print(execute_cmd)
+    # print(execute_cmd)
     # 使用 subprocess.run 执行命令
     result = subprocess.run(execute_cmd, shell=True, stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE, text=True)
@@ -141,7 +137,7 @@ def read_readme_content_(
         raise RuntimeError("clone object failed, err:{}".format(result.stderr))
 
     if not os.path.exists(filename):
-        return "该 {} {} 在 https://gitee.com/opengauss/tc 不存在，请重新输入".format(sig, filename)
+        return "该 {} {} 在 https://gitee.com/opengauss/tc 不存在，结束该轮对话，请重新输入".format(sig, filename)
 
     # 打开文件并读取内容
     with open(filename, 'r', encoding='utf-8') as file:

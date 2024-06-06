@@ -24,7 +24,6 @@ def get_meetinfo_by_group(
     ret = requests.get(url, params=params)
     if ret.status_code == 200:
         data = ret.json()
-        print(data)
         data['tableData'] = data['tableData'][-day:]
     else:
         raise Exception(f"API Request failed with status code: {ret.status_code}")
@@ -38,13 +37,11 @@ def get_all_meeting_group(
        和会议相关的内容时才优先被调用.
     """
     url = base_meeting_url + "groups/"
-    print(url)
     ret = requests.get(url)
     if ret.status_code == 200:
         data = ret.json()
     else:
         raise Exception(f"API Request failed with status code: {ret.status_code}")
-    print(json.dumps(data))
     return data
 
 @tool

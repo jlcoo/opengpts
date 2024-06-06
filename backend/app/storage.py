@@ -89,7 +89,7 @@ async def delete_assistant(user_id: str, assistant_id: str) -> None:
 async def list_threads(user_id: str) -> List[Thread]:
     """List all threads for the current user."""
     async with get_pg_pool().acquire() as conn:
-        return await conn.fetch("SELECT * FROM thread WHERE user_id = $1", user_id)
+        return await conn.fetch("SELECT * FROM thread WHERE user_id = $1 ORDER BY updated_at DESC", user_id)
 
 
 async def get_thread(user_id: str, thread_id: str) -> Optional[Thread]:

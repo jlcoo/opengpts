@@ -37,7 +37,6 @@ def get_tools_agent_executor(
                 msgs.append(HumanMessage(content=str(m.content)))
             else:
                 msgs.append(m)
-
         return [SystemMessage(content=system_message)] + msgs
 
     if tools:

@@ -59,6 +59,7 @@ from app.tools import (
     IssueAssign,
     WebLoader,
     RecommendQuestion,
+    GiteeInfo,
 )
 
 Tool = Union[
@@ -86,6 +87,7 @@ Tool = Union[
     IssueAssign,
     WebLoader,
     RecommendQuestion,
+    GiteeInfo,
 ]
 
 class AgentType(str, Enum):
@@ -135,7 +137,8 @@ def get_agent_executor(
     interrupt_before_action: bool,
 ):
     if agent == AgentType.GPT_35_TURBO:
-        llm = get_openai_llm(model="gpt-3.5-turbo-0125")
+        llm = get_openai_llm(model="gpt-3.5-turbo-0613")
+        # system_message = system_message + "我的gitee_name为: zhongjun02"
         return get_tools_agent_executor(
             tools, llm, system_message, interrupt_before_action, CHECKPOINTER
         )

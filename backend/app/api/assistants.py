@@ -146,7 +146,9 @@ async def _create_default_assistant(user_id: str, name: str) -> Assistant:
                     {"id":"17","type":"web_loader","name":"get web loader by url",
                      "description":"爬取指定URL的内容，获取openGauss的社区贡献指南非常有用","config":{}},
                     {"id":"18","type":"recommend_question","name":"get recommend question",
-                     "description":"获取自定义推荐的问题，根据输入场景进行推荐","config":{}}],
+                     "description":"获取自定义推荐的问题，根据输入场景进行推荐","config":{}},
+                    {"id":"19","type":"gitee_info","name":"get gitee user info",
+                     "description":"获取gitee的用户信息，当问我是谁时特别有用","config":{}}],
             "type==chat_retrieval/llm_type":"GPT 3.5 Turbo",
             "type==chat_retrieval/system_message":DEFAULT_SYSTEM_MESSAGE + self_info
         }
@@ -179,7 +181,6 @@ async def create_assistant(request: Request) -> Assistant:
             assistants = await storage.list_assistants(user["user_id"])
             if not assistants:
                 return await _create_default_assistant(user['user_id'], payload['gitee_name'])
-            logger.info("assistants:{}".format(assistants))
             return assistants[0] 
     except Exception as e:
         await storage.delete_user(user["sub"], user["user_id"])
