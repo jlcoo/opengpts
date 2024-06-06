@@ -46,7 +46,7 @@ def get_issues_detail_info(
     issue_type: Annotated[str, "issues的类型."] = '',
     search: Annotated[str, "issues的模糊搜索."] = '',
     page: Annotated[int, "获取的第几页数，默认1."] = 1,
-    per_page: Annotated[int, "每页能获取的数量，最大上限为50, 超过50需分页查询."] = 20,
+    per_page: Annotated[int, "每页能获取的数量，最大上限为50, 超过50需分页查询."] = 5,
 ) -> str:
     """
     - issue列表, 获取issue列表详情
