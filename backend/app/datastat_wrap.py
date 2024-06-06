@@ -27,7 +27,8 @@ def query_community_detail_info(
     if ret.status_code == 200:
         data = ret.json()
     else:
-        raise Exception(f"API Request failed with status code: {ret.status_code}")
+        #raise Exception(f"API Request failed with status code: {ret.status_code}")
+        return "参数错误，请重试，温馨提示，输入信息请尽量准确！status code: {}".format(ret.status_code)
     return data
 
 @tool
@@ -74,7 +75,8 @@ def query_community_usercontribute(
         except Exception as e:
             return "输入信息暂时无法处理，请重新调整输入再重试。"
     else:
-        raise Exception(f"API Request failed with status code: {ret.status_code}")
+        #raise Exception(f"API Request failed with status code: {ret.status_code}")
+        return "参数错误，请重试，温馨提示，输入信息请尽量准确！status code: {}".format(ret.status_code)
     return data
 
 @tool
@@ -96,7 +98,8 @@ def query_community_all_sigs(
         except Exception as e:
             return "输入信息暂时无法处理，请重新调整输入再重试。"
     else:
-        raise Exception(f"API Request failed with status code: {ret.status_code}")
+        #raise Exception(f"API Request failed with status code: {ret.status_code}")
+        return "参数错误，请重试，温馨提示，输入信息请尽量准确！status code: {}".format(ret.status_code)
     return data
 
 def read_readme_content_(

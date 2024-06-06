@@ -54,7 +54,8 @@ def get_pulls_repos(
     if ret.status_code == 200:
         data = ret.json()
     else:
-        raise Exception(f"API Request failed with status code: {ret.status_code}")
+        #raise Exception(f"API Request failed with status code: {ret.status_code}")
+        return "参数错误，请重试，温馨提示，输入信息请尽量准确！status code: {}".format(ret.status_code)
     return data
 
 
@@ -100,7 +101,8 @@ def get_pulls_detail_info(
     if ret.status_code == 200:
         data = ret.json()
     else:
-        raise Exception(f"API Request failed with status code: {ret.status_code}")
+        #raise Exception(f"API Request failed with status code: {ret.status_code}")
+        return "参数错误，请重试，温馨提示，输入信息请尽量准确！status code: {}".format(ret.status_code)
     return data
 
 @tool
@@ -114,6 +116,8 @@ def get_issue_assignees(
     """
     global base_pulls_url
     url = base_pulls_url + "assignees"
+    if keyword == 'all':
+        keyword = ''
     # Parameters for the request
     params = {
         'keyword': keyword,
@@ -124,7 +128,8 @@ def get_issue_assignees(
     if ret.status_code == 200:
         data = ret.json()
     else:
-        raise Exception(f"API Request failed with status code: {ret.status_code}")
+        #raise Exception(f"API Request failed with status code: {ret.status_code}")
+        return "参数错误，请重试，温馨提示，输入信息请尽量准确！status code: {}".format(ret.status_code)
     return data
 
 @tool
@@ -174,7 +179,8 @@ def get_pulls_refs(
     if ret.status_code == 200:
         data = ret.json()
     else:
-        raise Exception(f"API Request failed with status code: {ret.status_code}")
+        #raise Exception(f"API Request failed with status code: {ret.status_code}")
+        return "参数错误，请重试，温馨提示，输入信息请尽量准确！status code: {}".format(ret.status_code)
     return data
 
 @tool
@@ -194,6 +200,7 @@ def get_pulls_sigs(
     if ret.status_code == 200:
         data = ret.json()
     else:
-        raise Exception(f"API Request failed with status code: {ret.status_code}")
+        #raise Exception(f"API Request failed with status code: {ret.status_code}")
+        return "参数错误，请重试，温馨提示，输入信息请尽量准确！status code: {}".format(ret.status_code)
     print(json.dumps(data))
     return data

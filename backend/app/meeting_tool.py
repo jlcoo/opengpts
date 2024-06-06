@@ -26,7 +26,8 @@ def get_meetinfo_by_group(
         data = ret.json()
         data['tableData'] = data['tableData'][-day:]
     else:
-        raise Exception(f"API Request failed with status code: {ret.status_code}")
+        #raise Exception(f"API Request failed with status code: {ret.status_code}")
+        return "参数错误，请重试，温馨提示，输入信息请尽量准确！status code: {}".format(ret.status_code)
     return data
 
 @tool
@@ -41,7 +42,8 @@ def get_all_meeting_group(
     if ret.status_code == 200:
         data = ret.json()
     else:
-        raise Exception(f"API Request failed with status code: {ret.status_code}")
+        #raise Exception(f"API Request failed with status code: {ret.status_code}")
+        return "参数错误，请重试，温馨提示，输入信息请尽量准确！status code: {}".format(ret.status_code)
     return data
 
 @tool
