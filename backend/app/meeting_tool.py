@@ -1,6 +1,7 @@
 import os
 import requests
 import json
+from datetime import datetime
 from typing import Annotated
 from langchain_core.tools import tool
 
@@ -24,7 +25,14 @@ def get_meetinfo_by_group(
     ret = requests.get(url, params=params)
     if ret.status_code == 200:
         data = ret.json()
-        data['tableData'] = data['tableData'][-day:]
+        # 将字符串日期转换为datetime对象以便于比较
+        def parse_date(date_str):
+            return datetime.strptime(date_str, "%Y-%m-%d")
+
+        # 按照日期降序排序tableData
+        if data['tableData']:
+            sorted_table_data = sorted(data["tableData"], key=lambda x: parse_date(x["date"]), reverse=True)
+            data['tableData'] = sorted_table_data[:day]
     else:
         #raise Exception(f"API Request failed with status code: {ret.status_code}")
         return "参数错误，请重试，温馨提示，输入信息请尽量准确！status code: {}".format(ret.status_code)
