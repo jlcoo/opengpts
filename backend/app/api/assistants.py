@@ -108,47 +108,174 @@ async def _create_default_assistant(user_id: str, name: str) -> Assistant:
                 "If the user asks a vague question, they are likely meaning to look up info from this retriever, and you should call it!",
             "type==agent/system_message":DEFAULT_SYSTEM_MESSAGE + self_info,
                 "type==agent/tools":[
-                    {"id":"1","type":"wikipedia","name":"Wikipedia",
-                     "description":"Constrains: 回答内容必须限定在openEuler和openGauss社区的领域问题，"
-                        "避免涉及不相关的娱乐、政治或文化内容。Searches [Wikipedia](https://pypi.org/project/wikipedia/).","config":{}},
-                    {"id":"2","type":"search_tavily","name":"Search (Tavily)",
-                     "description":"Constrains: 回答内容必须限定在openEuler和openGauss社区的领域问题，避免涉及不相关的娱乐、政治或文化内容。"
-                     "Uses the [Tavily](https://app.tavily.com/) search engine. Includes sources in the response.","config":{}},
-                    {"id":"3","type":"search_tavily_answer","name":"Search (short answer, Tavily)",
-                     "description":"Uses the [Tavily](https://app.tavily.com/) search engine. This returns only the answer,"
-                     " no supporting evidence.","config":{}},
-                    {"id":"4","type":"now_time_tool","name":"get now time",
-                      "description":"获取服务器的本地时间.","config":{}},
-                    {"id":"5","type":"data_state_all_sig","name":"get datastat all sig",
-                     "description":"社区服务运营数据集，可以查询所有的sig组.","config":{}},
-                    {"id":"6","type":"data_state_sig_detail","name":"get datastat sig detail",
-                     "description":"社区服务运营数据集，可以查询sig组详情，包括miantainer、committer等信息.","config":{}},
-                    {"id":"7","type":"data_state_contribute","name":"get datastat contribute",
-                     "description":"社区服务运营数据集，可以查询按 pr/issue/coment 维度的贡献值.","config":{}},
-                    {"id":"8","type":"meet_group","name":"get all meeting sig group",
-                     "description":"获取会议系统的所有sig信息.","config":{}},
-                    {"id":"9","type":"meet_info","name":"get a sig meeting detail info",
-                     "description":"获取某个sig的会议预定详情.","config":{}},
-                    {"id":"10","type":"meet_create","name":"create a meeting",
-                     "description":"通过输入信息在会议系统创建一个会议","config":{}},
-                    {"id":"11","type":"send_email","name":"send a email",
-                     "description":"通过email催促并通知committer或maintainer进行代码检视","config":{}},
-                    {"id":"12","type":"pull_auther","name":"get pull by author keyword",
-                     "description":"模糊搜索pull提交的人名","config":{}},
-                    {"id":"13","type":"pull_detail","name":"get pull detail info",
-                     "description":"获取PR的详情","config":{}},
-                    {"id":"14","type":"public_retrieval","name":"PublicRetrieval",
-                     "description":"检索、搜索高优先级使用该工具，检索社区领域知识","config":{}},
-                    {"id":"15","type":"issue_label","name":"get issue  all label",
-                     "description":"issue标签列表","config":{}},
-                    {"id":"16","type":"issue_detail","name":"get issue detail info",
-                     "description":"获取issue列表详情","config":{}},
-                    {"id":"17","type":"web_loader","name":"get web loader by url",
-                     "description":"爬取指定URL的内容，获取openGauss的社区贡献指南非常有用","config":{}},
-                    {"id":"18","type":"recommend_question","name":"get recommend question",
-                     "description":"获取自定义推荐的问题，根据输入场景进行推荐","config":{}},
-                    {"id":"19","type":"gitee_info","name":"get gitee user info",
-                     "description":"获取gitee的用户信息，当问我是谁时特别有用","config":{}}],
+                    {
+                        "id": "1",
+                        "type": "wikipedia",
+                        "name": "Wikipedia",
+                        "description": "Constrains: 回答内容必须限定在openEuler和openGauss社区的领域问题，避免涉及不相关的娱乐、政治或文化内容。Searches [Wikipedia](https://pypi.org/project/wikipedia/).",
+                        "config": {}
+                    },
+                    {
+                        "id": "2",
+                        "type": "search_tavily",
+                        "name": "Search (Tavily)",
+                        "description": "Constrains: 回答内容必须限定在openEuler和openGauss社区的领域问题，避免涉及不相关的娱乐、政治或文化内容。Uses the [Tavily](https://app.tavily.com/) search engine. Includes sources in the response.",
+                        "config": {}
+                    },
+                    {
+                        "id": "3",
+                        "type": "search_tavily_answer",
+                        "name": "Search (short answer, Tavily)",
+                        "description": "Uses the [Tavily](https://app.tavily.com/) search engine. This returns only the answer, no supporting evidence.",
+                        "config": {}
+                    },
+                    {
+                        "id": "4",
+                        "type": "now_time_tool",
+                        "name": "get now time",
+                        "description": "获取服务器的本地时间.",
+                        "config": {}
+                    },
+                    {
+                        "id": "5",
+                        "type": "data_state_all_sig",
+                        "name": "get datastat all sig",
+                        "description": "社区服务运营数据集，可以查询所有的sig组.",
+                        "config": {}
+                    },
+                    {
+                        "id": "6",
+                        "type": "data_state_sig_detail",
+                        "name": "get datastat sig detail",
+                        "description": "社区服务运营数据集，可以查询sig组详情，包括miantainer、committer等信息.",
+                        "config": {}
+                    },
+                    {
+                        "id": "7",
+                        "type": "data_state_contribute",
+                        "name": "get datastat contribute",
+                        "description": "社区服务运营数据集，可以查询按 pr/issue/coment 维度的贡献值.",
+                        "config": {}
+                    },
+                    {
+                        "id": "8",
+                        "type": "meet_group",
+                        "name": "get all meeting sig group",
+                        "description": "获取会议系统的所有sig信息.",
+                        "config": {}
+                    },
+                    {
+                        "id": "9",
+                        "type": "meet_info",
+                        "name": "get a sig meeting detail info",
+                        "description": "获取某个sig的会议预定详情.",
+                        "config": {}
+                    },
+                    {
+                        "id": "10",
+                        "type": "meet_create",
+                        "name": "create a meeting",
+                        "description": "通过输入信息在会议系统创建一个会议",
+                        "config": {}
+                    },
+                    {
+                        "id": "11",
+                        "type": "send_email",
+                        "name": "send a email",
+                        "description": "通过email催促并通知committer或maintainer进行代码检视",
+                        "config": {}
+                    },
+                    {
+                        "id": "12",
+                        "type": "pull_auther",
+                        "name": "get pull by author keyword",
+                        "description": "模糊搜索pull提交的人名",
+                        "config": {}
+                    },
+                    {
+                        "id": "13",
+                        "type": "pull_detail",
+                        "name": "get pull detail info",
+                        "description": "获取PR的详情",
+                        "config": {}
+                    },
+                    {
+                        "id": "14",
+                        "type": "pull_label",
+                        "name": "get pull label",
+                        "description": "获取PR的label信息",
+                        "config": {}
+                    },
+                    {
+                        "id": "15",
+                        "type": "pull_repo",
+                        "name": "get pull repo",
+                        "description": "获取PR的代码仓repo, 可通过sig过滤",
+                        "config": {}
+                    },
+                    {
+                        "id": "16",
+                        "type": "pull_ref",
+                        "name": "get pull branch",
+                        "description": "模糊搜索PR的分支名",
+                        "config": {}
+                    },
+                    {
+                        "id": "17",
+                        "type": "pull_sig",
+                        "name": "get pull sig",
+                        "description": "模糊搜索PR的sig组",
+                        "config": {}
+                    },
+                    {
+                        "id": "18",
+                        "type": "public_retrieval",
+                        "name": "PublicRetrieval",
+                        "description": "检索、搜索高优先级使用该工具，检索社区领域知识",
+                        "config": {}
+                    },
+                    {
+                        "id": "19",
+                        "type": "issue_label",
+                        "name": "get issue  all label",
+                        "description": "issue标签列表",
+                        "config": {}
+                    },
+                    {
+                        "id": "20",
+                        "type": "issue_detail",
+                        "name": "get issue detail info",
+                        "description": "获取issue列表详情",
+                        "config": {}
+                    },
+                    {
+                        "id": "21",
+                        "type": "issue_assign",
+                        "name": "get issue assignee",
+                        "description": "获取issue的责任者",
+                        "config": {}
+                    },
+                    {
+                        "id": "22",
+                        "type": "web_loader",
+                        "name": "get web loader by url",
+                        "description": "爬取指定URL的内容，获取openGauss的社区贡献指南非常有用",
+                        "config": {}
+                    },
+                    {
+                        "id": "23",
+                        "type": "recommend_question",
+                        "name": "get recommend question",
+                        "description": "获取自定义推荐的问题，根据输入场景进行推荐",
+                        "config": {}
+                    },
+                    {
+                        "id": "24",
+                        "type": "gitee_info",
+                        "name": "get gitee user info",
+                        "description": "获取gitee的用户信息，当问我是谁时特别有用",
+                        "config": {}
+                    }],
             "type==chat_retrieval/llm_type":"GPT 3.5 Turbo",
             "type==chat_retrieval/system_message":DEFAULT_SYSTEM_MESSAGE + self_info
         }
