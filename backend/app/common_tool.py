@@ -33,7 +33,7 @@ def recommend_questions(scenes: Annotated[str, "输入推荐问题场景，比�
     <div style="color:red">
     1. 查询我最近在某个sig组提交的PR有哪些，其中有几个是处于open状态？比如:查询我最近在Infra sig组提交的PR有哪些，其中有几个是处于open状态？
     2. 获取某个sig组下的未关闭/已关闭的PR信息?比如:获取QA SIG组下的未关闭的PR信息？
-    3. 查询我在某个sig组最近一次提交的PR，并找到该PR对应SIG的maintainer，发邮件催促maintainer检视该PR。
+    3. 查询我在某个sig组最近一次提交的PR，并找到该PR对应SIG的maintainer，发邮件催促maintainer检视该PR。比如:查询我在Infra sig组最近一次提交的PR，并找到该PR对应SIG的maintainer，发邮件催促maintainer检视该PR
     4. 获取某个sig组的未关闭/已关闭的issue详情?比如:获取QA SIG组下的未关闭的issue详情？
     </div>
     """
@@ -44,16 +44,14 @@ def recommend_questions(scenes: Annotated[str, "输入推荐问题场景，比�
     1. 社区有哪些SIG组？
     2. 查询某个SIG组的仓库清单,比如:查询QA SIG组的仓库清单?
     3. 最近一个月 QA SIG组最活跃的开发者是哪些人？
-    4. 检索一下某个sig组的maintainer和committer联系方式，比如检索Infra sig组的maintainer和committer联系方式
-    5. 查询某个SIG组主要方向是什么?
+    4. 检索一下某个sig组的maintainer和committer联系方式，比如检索Infra sig组的maintainer和committer联系方式?
+    5. 查询某个SIG组主要方向是什么? 比如:查询Infra SIG组主要方向是什么?
     </div>
     """
     meeting_scene = """
     <div style="color:red">
     1. 社区最近3次会议是哪些？
-    2. 查询某个SIG组最近一周的会议列表,比如:查询QA SIG组最近一周的会议列表？
-    3. 查询某个SIG组近期的会议情况，并且以表格展示,比如:查询QA SIG组近期的会议情况，并且以表格展示？
-    4. 查询会议服务系统中，所有已经预定会议的sig组信息?
+    2. 查询某个SIG组近期的会议情况，并且以表格展示,比如:查询QA SIG组近期的会议情况，并且以表格展示？
     </div>
     """
     community_contribute_scene = """
@@ -70,15 +68,16 @@ def recommend_questions(scenes: Annotated[str, "输入推荐问题场景，比�
     3. 在openguass社区中有哪些SIG组?
     </div>
     """
-    if 'SIG' in scenes or 'sig' in scenes:
+    lower_scenes = scenes.lower()
+    if 'sig' in lower_scenes:
         return sig_scene
-    elif 'PR' in scenes or 'pr' in scenes:
+    elif 'pr' in lower_scenes:
         return pr_scenes
-    elif '会议' in scenes or 'meeting' in scenes or 'MEETING' in scenes:
+    elif '会议' in lower_scenes or 'meeting' in lower_scenes:
         return meeting_scene
-    elif '社区贡献' in scenes or 'community_contribution' in scenes:
+    elif '社区贡献' in lower_scenes or 'community_contribution' in lower_scenes or 'contribution' in lower_scenes:
         return community_contribute_scene
-    elif '社区数据' in scenes:
+    elif '社区数据' in lower_scenes or 'community data' in lower_scenes or 'data' in lower_scenes:
         return community_data_scene
     return "推荐一些通用问题"
 

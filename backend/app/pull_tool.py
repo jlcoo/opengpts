@@ -79,7 +79,7 @@ def get_pulls_detail_info(
 ) -> str:
     """
     - 功能介绍: 获取所有开源社区组织下仓库的Pull Request列表，需要放回PR地址
-    PR提交者获取: 当上下文出现我时候，调用gitee_user_tool获取author
+    author值传递: 当上下文出现我这个关键字时候，先调用gitee_user_tool获取PR作者
     - output: PR id地址为PR URL地址的数字
     """
     global base_pulls_url
