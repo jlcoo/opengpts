@@ -71,7 +71,7 @@ class Wikipedia(BaseTool):
     type: AvailableTools = Field(AvailableTools.WIKIPEDIA, const=True)
     name: str = Field("Wikipedia", const=True)
     description: str = Field(
-        ("Constrains: 回答内容必须限定在openEuler和openGauss社区的领域问题，避免涉及不相关的娱乐、政治或文化内容。"\
+        ("Constrains: 回答内容必须限定在openGauss社区的领域问题，避免涉及不相关的娱乐、政治或文化内容。"\
         "Searches [Wikipedia](https://pypi.org/project/wikipedia/)."),
         const=True
     )
@@ -81,7 +81,7 @@ class Tavily(BaseTool):
     name: str = Field("Search (Tavily)", const=True)
     description: str = Field(
         (
-            "Constrains: 回答内容必须限定在openEuler和openGauss社区的领域问题，避免涉及不相关的娱乐、政治或文化内容。"
+            "Constrains: 回答内容必须限定在openGauss社区的领域问题，避免涉及不相关的娱乐、政治或文化内容。"
             "Uses the [Tavily](https://app.tavily.com/) search engine. "
             "Includes sources in the response."
         ),
@@ -93,6 +93,7 @@ class TavilyAnswer(BaseTool):
     name: str = Field("Search (short answer, Tavily)", const=True)
     description: str = Field(
         (
+            "Constrains: 回答内容必须限定在openGauss社区的领域问题，避免涉及不相关的娱乐、政治或文化内容。"
             "Uses the [Tavily](https://app.tavily.com/) search engine. "
             "This returns only the answer, no supporting evidence."
         ),
@@ -300,14 +301,14 @@ def get_retrieval_tool(assistant_id: str, thread_id: str, description: str):
 @lru_cache(maxsize=1)
 def _get_wikipedia():
     return create_retriever_tool(
-        WikipediaRetriever(), "wikipedia", "Search for a query on Wikipedia"
+        WikipediaRetriever(), "wikipedia", "Search for a query on Wikipedia,Constrains: 回答内容必须限定在openGauss社区的领域问题，不要回答娱乐、政治、文化、宗教的问题"
     )
 
 
 @lru_cache(maxsize=1)
 def _get_tavily():
     tavily_search = TavilySearchAPIWrapper()
-    return TavilySearchResults(api_wrapper=tavily_search, name="search_tavily")
+    return TavilySearchResults(api_wrapper=tavily_search, name="search_tavily", max_results=2)
 
 @lru_cache(maxsize=1)
 def _get_tavily_answer():
