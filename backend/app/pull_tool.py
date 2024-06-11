@@ -79,6 +79,7 @@ def get_pulls_detail_info(
 ) -> str:
     """
     - 功能介绍: 获取所有开源社区组织下仓库的Pull Request列表，需要放回PR地址
+    PR提交者获取: 当上下文出现我时候，调用gitee_user_tool获取author
     - output: PR id地址为PR URL地址的数字
     """
     global base_pulls_url
@@ -120,7 +121,7 @@ def get_issue_assignees(
     """
     global base_pulls_url
     url = base_pulls_url + "assignees"
-    if keyword == 'all' or keyword == 'total':
+    if keyword == 'all' or keyword == 'total' or keyword == 'opengauss':
         keyword = ''
     # Parameters for the request
     params = {
@@ -148,7 +149,7 @@ def get_pulls_authors(
     # 先直接 return,[TODO]接口OK后需要删除
     global base_pulls_url
     url = base_pulls_url + "authors"
-    if keyword == 'all' or keyword == 'total':
+    if keyword == 'all' or keyword == 'total' or keyword == 'opengauss':
         keyword = ''
     # Parameters for the request
     params = {
