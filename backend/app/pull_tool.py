@@ -17,6 +17,8 @@ def get_pulls_labels(
     """
     global base_pulls_url
     url = base_pulls_url + "labels"
+    if keyword == 'all' or keyword == 'total':
+        keyword = ''
     # Parameters for the request
     params = {
         'keyword': keyword,
@@ -43,6 +45,8 @@ def get_pulls_repos(
     """
     global base_pulls_url
     url = base_pulls_url + "repos"
+    if keyword == 'all' or keyword == 'total':
+        keyword = ''
     # Parameters for the request
     params = {
         'sig': sig,
@@ -116,7 +120,7 @@ def get_issue_assignees(
     """
     global base_pulls_url
     url = base_pulls_url + "assignees"
-    if keyword == 'all':
+    if keyword == 'all' or keyword == 'total':
         keyword = ''
     # Parameters for the request
     params = {
@@ -144,6 +148,8 @@ def get_pulls_authors(
     # 先直接 return,[TODO]接口OK后需要删除
     global base_pulls_url
     url = base_pulls_url + "authors"
+    if keyword == 'all' or keyword == 'total':
+        keyword = ''
     # Parameters for the request
     params = {
         'keyword': keyword,
@@ -169,6 +175,8 @@ def get_pulls_refs(
     """
     global base_pulls_url
     url = base_pulls_url + "refs"
+    if keyword == 'all' or keyword == 'total':
+        keyword = ''
     # Parameters for the request
     params = {
         'keyword': keyword,
@@ -192,7 +200,7 @@ def get_pulls_sigs(
     """
     global base_pulls_url
     params = {}
-    if keyword and keyword != 'all':
+    if keyword and keyword != 'all' and keyword != 'total':
         params['keyword'] = keyword
     url = base_pulls_url + "sigs"
 
