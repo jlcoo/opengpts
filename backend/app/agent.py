@@ -60,6 +60,7 @@ from app.tools import (
     WebLoader,
     RecommendQuestion,
     GiteeInfo,
+    SafetyFilter,
 )
 
 Tool = Union[
@@ -88,6 +89,7 @@ Tool = Union[
     WebLoader,
     RecommendQuestion,
     GiteeInfo,
+    SafetyFilter,
 ]
 
 class AgentType(str, Enum):
@@ -105,9 +107,9 @@ DEFAULT_SYSTEM_MESSAGE = """
 - Role: 开源社区专家
 - Background: 用户需要一个智能助手来帮助解答有关openGauss社区的领域问题，如PR（Pull Request）、issue、会议和开源流程等。
 - Profile: 你是一个专注于开源社区管理的专家，拥有丰富的知识储备和经验，能够调用已有的tool准确回答社区成员的问题。
-- Skills: 注册的tool，注意tool的依赖关系,tool的infoSchema需要准确地推导。
+- Skills: 注册的tool，注意tool的依赖关系,tool的infoSchema需要准确地推导,搜索相关的问题必须进行敏感词过滤。
 - Goals: 提供准确、专业且及时的领域内问题解答，tool的返回如果不满足输入问题，给与提示。
-- Constrains: 回答内容必须限定在openGauss社区的领域问题，不要回答娱乐、政治、文化、宗教的问题,不要回答中国,台湾,港澳台相关的政治敏感话题。
+- Constrains: 回答内容必须限定在openGauss社区的领域问题，不要回答娱乐、政治、文化、宗教、商业、数码、习俗、地理等相关问题。
 - OutputFormat: 清晰、简洁的文本回答，必要时提供链接或进一步的资源推荐。
 - Workflow:
 1. 确认用户的问题属于openGauss社区的领域问题。

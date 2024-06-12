@@ -6,14 +6,6 @@ from typing import Optional, Annotated
 from langchain.pydantic_v1 import BaseModel, Field
 from langchain.tools.retriever import create_retriever_tool
 from langchain_community.retrievers.kay import KayAiRetriever
-from langchain_community.retrievers.wikipedia import WikipediaRetriever
-from langchain_community.tools.tavily_search import (
-    TavilyAnswer as _TavilyAnswer,
-)
-from langchain_community.tools.tavily_search import (
-    TavilySearchResults,
-)
-from langchain_community.utilities.tavily_search import TavilySearchAPIWrapper
 from langchain_core.tools import Tool
 from typing_extensions import TypedDict
 
@@ -55,6 +47,7 @@ class AvailableTools(str, Enum):
     WEB_LOADER = "web_loader"
     RECOMMEND_QUESTION = "recommend_question"
     GITEE_INFO = "gitee_info"
+    SAFETY_FILTER = "safety_filter"
 
 
 class ToolConfig(TypedDict):
@@ -71,8 +64,7 @@ class Wikipedia(BaseTool):
     type: AvailableTools = Field(AvailableTools.WIKIPEDIA, const=True)
     name: str = Field("Wikipedia", const=True)
     description: str = Field(
-        ("Constrains: 回答内容必须限定在openGauss社区的领域问题，避免涉及不相关的娱乐、政治或文化内容。"\
-        "Searches [Wikipedia](https://pypi.org/project/wikipedia/)."),
+        ("Searches [Wikipedia](https://pypi.org/project/wikipedia/)."),
         const=True
     )
 
@@ -81,7 +73,6 @@ class Tavily(BaseTool):
     name: str = Field("Search (Tavily)", const=True)
     description: str = Field(
         (
-            "Constrains: 回答内容必须限定在openGauss社区的领域问题，避免涉及不相关的娱乐、政治或文化内容。"
             "Uses the [Tavily](https://app.tavily.com/) search engine. "
             "Includes sources in the response."
         ),
@@ -93,7 +84,6 @@ class TavilyAnswer(BaseTool):
     name: str = Field("Search (short answer, Tavily)", const=True)
     description: str = Field(
         (
-            "Constrains: 回答内容必须限定在openGauss社区的领域问题，避免涉及不相关的娱乐、政治或文化内容。"
             "Uses the [Tavily](https://app.tavily.com/) search engine. "
             "This returns only the answer, no supporting evidence."
         ),
@@ -262,6 +252,14 @@ class GiteeInfo(BaseTool):
         const=True,
     )
 
+class SafetyFilter(BaseTool):
+    type: AvailableTools = Field(AvailableTools.SAFETY_FILTER, const=True)
+    name: str = Field("filter unsafety input", const=True)
+    description: str = Field(
+        "过滤非openGauss领域的问题",
+        const=True,
+    )
+
 RETRIEVAL_DESCRIPTION = """Can be used to look up information that was uploaded to this assistant.
 If the user is referencing particular files, that is often a good hint that information may be here.
 If the user asks a vague question, they are likely meaning to look up info from this retriever, and you should call it!"""
@@ -300,20 +298,15 @@ def get_retrieval_tool(assistant_id: str, thread_id: str, description: str):
 
 @lru_cache(maxsize=1)
 def _get_wikipedia():
-    return create_retriever_tool(
-        WikipediaRetriever(), "wikipedia", "Search for a query on Wikipedia,Constrains: 回答内容必须限定在openGauss社区的领域问题，不要回答娱乐、政治、文化、宗教的问题"
-    )
-
+    return wikipedia_retriver
 
 @lru_cache(maxsize=1)
 def _get_tavily():
-    tavily_search = TavilySearchAPIWrapper()
-    return TavilySearchResults(api_wrapper=tavily_search, name="search_tavily", max_results=2)
+    return search_tavily
 
 @lru_cache(maxsize=1)
 def _get_tavily_answer():
-    tavily_search = TavilySearchAPIWrapper()
-    return _TavilyAnswer(api_wrapper=tavily_search, name="search_tavily_answer")
+    return tavily_answer_tool
 
 def _get_now_time():
     return now_time_tool
@@ -398,6 +391,10 @@ def _get_issue_detail():
 def _get_gitee_user():
     return gitee_user_tool
 
+@lru_cache(maxsize=1)
+def _get_safety_user():
+    return moderation_security_tool
+
 TOOLS = {
     AvailableTools.TAVILY: _get_tavily,
     AvailableTools.WIKIPEDIA: _get_wikipedia,
@@ -423,4 +420,5 @@ TOOLS = {
     AvailableTools.WEB_LOADER: _get_web_loader,
     AvailableTools.RECOMMEND_QUESTION: _get_recommend_questions,
     AvailableTools.GITEE_INFO: _get_gitee_user,
+    AvailableTools.SAFETY_FILTER: _get_safety_user,
 }
