@@ -111,22 +111,22 @@ async def _create_default_assistant(user_id: str, name: str) -> Assistant:
                     {
                         "id": "1",
                         "type": "wikipedia",
-				        "name": "Wikipedia",
-				        "description": "Constrains: 回答内容必须限定在openGauss社区的领域问题，避免涉及不相关的娱乐、政治或文化内容。Searches [Wikipedia](https://pypi.org/project/wikipedia/).",
+                        "name": "Wikipedia",
+                        "description": "Searches [Wikipedia](https://pypi.org/project/wikipedia/).",
                         "config": {}
                     },
                     {
                         "id": "2",
                         "type": "search_tavily",
-				        "name": "Search (Tavily)",
-				        "description": "Constrains: 回答内容必须限定在openGauss社区的领域问题，避免涉及不相关的娱乐、政治或文化内容。Uses the [Tavily](https://app.tavily.com/) search engine. Includes sources in the response.",
+                        "name": "Search (Tavily)",
+                        "description": "Uses the [Tavily](https://app.tavily.com/) search engine. Includes sources in the response.",
                         "config": {}
                     },
                     {
                         "id": "3",
                         "type": "search_tavily_answer",
-				        "name": "Search (short answer, Tavily)",
-				        "description": "Constrains: 回答内容必须限定在openGauss社区的领域问题，避免涉及不相关的娱乐、政治或文化内容。Uses the [Tavily](https://app.tavily.com/) search engine. This returns only the answer, no supporting evidence.",
+                        "name": "Search (short answer, Tavily)",
+                        "description": "Uses the [Tavily](https://app.tavily.com/) search engine. This returns only the answer, no supporting evidence.",
                         "config": {}
                     },
                     {
@@ -274,6 +274,13 @@ async def _create_default_assistant(user_id: str, name: str) -> Assistant:
                         "type": "gitee_info",
                         "name": "get gitee user info",
                         "description": "获取gitee的用户信息，当问我是谁时特别有用",
+                        "config": {}
+                    },
+                    {
+                        "id": "25",
+                        "type": "safety_filter",
+                        "name": "filter unsafety input",
+                        "description": "过滤非openGauss领域的问题",
                         "config": {}
                     }],
             "type==chat_retrieval/llm_type":"GPT 3.5 Turbo",
