@@ -120,7 +120,7 @@ def get_issue_assignees(
     """
     global base_pulls_url
     url = base_pulls_url + "assignees"
-    if keyword == 'all' or keyword == 'total':
+    if keyword == 'all' or keyword == 'total' or keyword == 'opengauss':
         keyword = ''
     # Parameters for the request
     params = {
@@ -148,7 +148,7 @@ def get_pulls_authors(
     # 先直接 return,[TODO]接口OK后需要删除
     global base_pulls_url
     url = base_pulls_url + "authors"
-    if keyword == 'all' or keyword == 'total':
+    if keyword == 'all' or keyword == 'total' or keyword == 'opengauss':
         keyword = ''
     # Parameters for the request
     params = {

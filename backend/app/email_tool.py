@@ -51,7 +51,6 @@ async def update_pr_email_time(url: str, now_time: datetime):
         await conn.execute(
             (
                 "UPDATE pr_email SET last_send_date = $1 WHERE email_key = $2"
-                "ON CONFLICT (email_key) DO NOTHING"
             ),
             now_time,
             url,
