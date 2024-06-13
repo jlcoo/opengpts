@@ -43,26 +43,59 @@ def recommend_questions(scenes: Annotated[str, "输入推荐问题场景，比�
     # PR相关
     pr_scenes = """
     <div style="color:red">
-    1. 我最近提交的前5个PR是哪些？其中有几个还是处于open状态？
-    2. 有提交过PR记录的sig组有哪些？一共多少个？
-    3. 查询我最近一次提交的PR，并找到该PR对应SIG的maintainer和committer，发邮件催促maintainer检视该PR。
+    获取QA SIG组下的PR信息？
+    获取QA SIG组下的issue详情？
+    查询我的gitee name,并查询我最近在Infra SIG组提交的PR有哪些，其中有几个是处于open状态？
+    查询我的gitee name,并查询我在Infra SIG组最近一次提交的PR，并找到该PR对应SIG的maintainer，发邮件催促maintainer检视该PR。
     </div>
     """
     # Issue相关
     # SIG信息
     sig_scene = """
-    <div style="color:red">
-    1. 社区有哪些SIG组？
-    2. 社区有哪些SIG组最近一周有会议议程？
-    3. 最近一个月 QA SIG组最活跃的开发者是哪些人？
-    4. 检索一下某个sig组的maintainer和committer联系方式，比如检索infra sig组的maintainer和committer联系方式
+    <div class="chat-question-content">
+     <div class="chat-question-desc">关于 SIG信息 你可以问我任何问题,也可以尝试点击以下问题开始：</div>
+     <div class="chat-question-list">
+         <div class="chat-question-list-item">社区有哪些SIG组？</div>
+         <div class="chat-question-list-item">查询QA SIG组的仓库清单?</div>
+         <div class="chat-question-list-item">最近一个月 QA SIG组最活跃的开发者是哪些人？</div>
+         <div class="chat-question-list-item">查询Infra SIG组主要方向是什么?</div>
+         <div class="chat-question-list-item">检索Infra SIG组的maintainer和committer联系方式?</div>
+     </div>
     </div>
     """
-
-    if 'SIG' in scenes or 'sig' in scenes:
+    meeting_scene = """
+    <div style="color:red">
+    1. 社区最近3次会议是哪些？
+    2. 查询QA SIG组近期的会议情况，并且以表格展示？
+    </div>
+    """
+    community_contribute_scene = """
+    <div style="color:red">
+    1. 查询在QA SIG组中的pr贡献?
+    2. 查询在QA SIG组中的issue贡献？
+    3. 查询在QA SIG组中的comment贡献？
+    4. 怎么深入参与openGauss的社区贡献?
+    </div>
+    """
+    community_data_scene = """
+    <div style="color:red">
+    1. 在openguass社区中有哪些SIG组?
+    2. 在openguass社区中，一共有多少位issue指派者？获取10个issue的指派者信息?
+    3. 在openguass社区中，一共有多少位PR贡献者？获取10个PR贡献者信息?
+  
+    </div>
+    """
+    lower_scenes = scenes.lower()
+    if 'sig' in lower_scenes:
         return sig_scene
-    elif 'PR' in scenes or 'pr' in scenes:
+    elif 'pr' in lower_scenes:
         return pr_scenes
+    elif '会议' in lower_scenes or 'meeting' in lower_scenes:
+        return meeting_scene
+    elif '社区贡献' in lower_scenes or 'community_contribution' in lower_scenes or 'contribution' in lower_scenes:
+        return community_contribute_scene
+    elif '社区数据' in lower_scenes or 'community data' in lower_scenes or 'data' in lower_scenes:
+        return community_data_scene
     return "推荐一些通用问题"
 
 @tool
