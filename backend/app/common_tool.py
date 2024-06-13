@@ -36,7 +36,12 @@ def web_loader(url: str) -> str:
 
 @tool
 def recommend_questions(scenes: Annotated[str, "输入推荐问题场景，比如 PR 相关问题"]) -> str:
-    """当您需要获取场景问答时，非常有用，会返回推荐问题, 保留该tool输出格式
+    """当出现场景问答时候，调用当前这个recommend_questions tool,当您需要获取场景问答时，非常有用，会返回推荐问题,
+    比如 场景问答：会议查询以及预定
+        场景问答：SIG信息
+        场景问答：社区贡献
+        场景问答：PR详情、PR Review
+        场景问答：社区数据 ,保留该tool输出格式
     """
     # 社区贡献
     # 社区数据
@@ -97,7 +102,7 @@ def recommend_questions(scenes: Annotated[str, "输入推荐问题场景，比�
         return sig_scene
     elif 'pr' in lower_scenes:
         return pr_scenes
-    elif '会议' in lower_scenes or 'meeting' in lower_scenes:
+    elif '会议查询以及预定' in lower_scenes or 'meeting' in lower_scenes:
         return meeting_scene
     elif '社区贡献' in lower_scenes or 'community_contribution' in lower_scenes or 'contribution' in lower_scenes:
         return community_contribute_scene
