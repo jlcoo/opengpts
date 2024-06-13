@@ -15,13 +15,15 @@ from langchain_community.utilities.tavily_search import TavilySearchAPIWrapper
 from langchain_community.retrievers.wikipedia import WikipediaRetriever
 from langchain.tools.retriever import create_retriever_tool
 
+
 @tool
 def now_time_tool(
-    input: Annotated[str, "可以不用参数"] = ''
+        input: Annotated[str, "可以不用参数"] = ''
 ):
     """当您需要获取当前时间非常有效
     """
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
 
 @tool
 def web_loader(url: str) -> str:
@@ -33,6 +35,7 @@ def web_loader(url: str) -> str:
     loader = WebBaseLoader(url)
     docs = loader.load()
     return docs[0].page_content
+
 
 @tool
 def recommend_questions(scenes: Annotated[str, "输入推荐问题场景，比如 PR 相关问题"]) -> str:
@@ -51,18 +54,17 @@ def recommend_questions(scenes: Annotated[str, "输入推荐问题场景，比�
     """
     # Issue相关
     # SIG信息
-    sig_scene = """
-    <div class="chat-question-content">
-     <div class="chat-question-desc">关于 SIG信息 你可以问我任何问题,也可以尝试点击以下问题开始：</div>
-     <div class="chat-question-list">
-         <div class="chat-question-list-item">社区有哪些SIG组？</div>
-         <div class="chat-question-list-item">查询QA SIG组的仓库清单?</div>
-         <div class="chat-question-list-item">最近一个月 QA SIG组最活跃的开发者是哪些人？</div>
-         <div class="chat-question-list-item">查询Infra SIG组主要方向是什么?</div>
-         <div class="chat-question-list-item">检索Infra SIG组的maintainer和committer联系方式?</div>
-     </div>
-    </div>
-    """
+    sig_scene = "<div class=\"chat-question-content\">" \
+                "<div class=\"chat-question-desc\">关于 SIG信息 你可以问我任何问题,也可以尝试点击以下问题开始：</div>" \
+                "<div class=\"chat-question-list\">" \
+                "<div class=\"chat-question-list-item\">社区有哪些SIG组？</div>" \
+                "<div class=\"chat-question-list-item\">查询QA SIG组的仓库清单?</div>" \
+                "<div class=\"chat-question-list-item\">最近一个月 QA SIG组最活跃的开发者是哪些人？</div>" \
+                "<div class=\"chat-question-list-item\">查询Infra SIG组主要方向是什么?</div>" \
+                "<div class=\"chat-question-list-item\">检索Infra SIG组的maintainer和committer联系方式?</div>" \
+                "</div>" \
+                "</div>"
+
     meeting_scene = """
     <div style="color:red">
     1. 社区最近3次会议是哪些？
@@ -98,9 +100,10 @@ def recommend_questions(scenes: Annotated[str, "输入推荐问题场景，比�
         return community_data_scene
     return "推荐一些通用问题"
 
+
 @tool
 def gitee_user_tool(
-    gitee_name: Annotated[str, "从系统提示语中获取gitee_name返回"]
+        gitee_name: Annotated[str, "从系统提示语中获取gitee_name返回"]
 ):
     """当您需要获取个人信息时非常有用,比如回答我是谁时, 通过返回值输出分析并得出正确的结果
     output: 您的Gitee用户名为: {gitee_name}
@@ -109,6 +112,7 @@ def gitee_user_tool(
     if 'default_opengauss' == gitee_name:
         return "您没有设置gitee信息，无法识别您的具体信息"
     return "您的Gitee用户名为: {}".format(gitee_name)
+
 
 SYSTEM_PROMPT = """
 - Role: openGauss和openEuler敏感问题过滤专家
@@ -140,10 +144,11 @@ prompt = ChatPromptTemplate.from_messages([
 chain = prompt | model
 moderated_chain = chain | moderate
 
+
 @tool
 def moderation_security_tool(
-    input_question: Annotated[str, "需要进行敏感词过滤的用户问题"],
-    tool_name: Annotated[str, "敏感词过滤后需要继续调用tool的名字"],
+        input_question: Annotated[str, "需要进行敏感词过滤的用户问题"],
+        tool_name: Annotated[str, "敏感词过滤后需要继续调用tool的名字"],
 ):
     """search_tavily, search_tavily_answer, wikipedia这三个工具调用前必须先调用该工具进行敏感词过滤
        如果不是openGauss社区问题就不要继续回答了
@@ -154,31 +159,35 @@ def moderation_security_tool(
         return "您的问题不属于openGauss社区智能小助手的领域范围，结束对话，请不要继续搜索该问题！"
     return "以输入为{}继续调用工具".format(input_question)
 
+
 @tool
 def tavily_answer_tool(
-    input: Annotated[str, "输入参数, 不能涉及娱乐、政治、文化、宗教相关问题"]
+        input: Annotated[str, "输入参数, 不能涉及娱乐、政治、文化、宗教相关问题"]
 ):
     """执行该工具之前需要先调用moderation_security_tool进行敏感词判断
     """
     tavily_search = TavilySearchAPIWrapper()
     return _TavilyAnswer(api_wrapper=tavily_search, name="search_tavily_answer").run(input)
 
+
 @tool
 def search_tavily(
-    input: Annotated[str, "输入参数, 不能涉及娱乐、政治、文化、宗教相关问题"]
+        input: Annotated[str, "输入参数, 不能涉及娱乐、政治、文化、宗教相关问题"]
 ):
     """执行该工具之前需要先调用moderation_security_tool进行敏感词判断
     """
     tavily_search = TavilySearchAPIWrapper()
     return TavilySearchResults(api_wrapper=tavily_search, name="search_tavily", max_results=2).run(input)
 
+
 wikipedia_tool = create_retriever_tool(
-        WikipediaRetriever(), "wikipedia", "Search for a query on Wikipedia,调用前必须使用moderation_security_tool敏感词过滤"
-    )
+    WikipediaRetriever(), "wikipedia", "Search for a query on Wikipedia,调用前必须使用moderation_security_tool敏感词过滤"
+)
+
 
 @tool
 def wikipedia_retriver(
-    input: Annotated[str, "输入参数, 不能涉及娱乐、政治、文化、宗教相关问题"]
+        input: Annotated[str, "输入参数, 不能涉及娱乐、政治、文化、宗教相关问题"]
 ):
     """执行该工具之前需要先调用moderation_security_tool进行敏感词判断
     """
