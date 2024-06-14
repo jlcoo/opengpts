@@ -72,7 +72,7 @@ def recommend_questions(scenes: Annotated[str, "输入推荐问题场景，比�
     meeting_scene = "<div class=\"chat-question-content\">" \
                     "<div class=\"chat-question-desc\">关于 会议信息 你可以问我任何问题,也可以尝试点击以下问题开始：</div>" \
                     "<div class=\"chat-question-list\">" \
-                    "<div class=\"chat-question-list-item\">社区最近3次会议是哪些</div>" \
+                    "<div class=\"chat-question-list-item\">openGuass社区最近3次会议是哪些,并且以表格展示</div>" \
                     "<div class=\"chat-question-list-item\">查询QA SIG组近期的会议情况，并且以表格展示</div>" \
                     "</div>" \
                     "</div>"

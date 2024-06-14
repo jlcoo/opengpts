@@ -14,9 +14,9 @@ def get_meetinfo_by_group(
 ):
     """
     - 约束: 如果上下文有时间信息，先调用now_time_tool获取一下当前时间
-    - 推荐: 调用前通过get_all_meeting_group工具查询一下group的准确性
+    - 推荐: 如果上下文有openGuass社区信息直接调用该get_meetinfo_by_group tool,否则调用前通过get_all_meeting_group工具查询一下group的准确性准确性
     """
-    if group == 'all':
+    if group == 'all' or group == 'openGuass':
         group = ''
     url = base_meeting_url + 'meetingsdata/'
     params = {
