@@ -14,7 +14,6 @@ def get_meetinfo_by_group(
 ):
     """
     - 约束: 如果上下文有时间信息，先调用now_time_tool获取一下当前时间,上下文有openGuass社区信息直接调用get_meetinfo_by_group
-    - 推荐: 调用前通过get_all_meeting_group工具查询一下group的准确性准确性
     """
     if group == 'all' or group == 'openGuass':
         group = ''
@@ -42,9 +41,7 @@ def get_meetinfo_by_group(
 def get_all_meeting_group(
     input: Annotated[str, "默认为空"] = '',
 ):
-    """查询会议服务系统中，所有已经预定会议的sig组信息，主要展示了sig组的名称，
-       和会议相关的内容时才优先被调用.
-    """
+    """查询会议服务系统中，所有已经预定会议的sig组信息，主要展示了sig组的名称."""
     url = base_meeting_url + "groups/"
     ret = requests.get(url)
     if ret.status_code == 200:
