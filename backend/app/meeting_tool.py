@@ -13,8 +13,8 @@ def get_meetinfo_by_group(
     day: Annotated[int, "会议系统最新的天数."] = 5,
 ):
     """
-    - 约束: 如果上下文有时间信息，先调用now_time_tool获取一下当前时间
-    - 推荐: 如果上下文有openGuass社区信息直接调用该get_meetinfo_by_group tool,否则调用前通过get_all_meeting_group工具查询一下group的准确性准确性
+    - 约束: 如果上下文有时间信息，先调用now_time_tool获取一下当前时间,上下文有openGuass社区信息直接调用get_meetinfo_by_group
+    - 推荐: 调用前通过get_all_meeting_group工具查询一下group的准确性准确性
     """
     if group == 'all' or group == 'openGuass':
         group = ''
