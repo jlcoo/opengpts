@@ -48,12 +48,20 @@ def get_pulls_repos(
     if keyword == 'all' or keyword == 'total':
         keyword = ''
     # Parameters for the request
-    params = {
-        'sig': sig,
-        'keyword': keyword,
-        'page': page,
-        'per_page': per_page,
-    }
+    params = {}
+    if sig == 'all':
+        params = {
+            'keyword': keyword,
+            'page': page,
+            'per_page': per_page,
+        }
+    else:
+        params = {
+            'sig': sig,
+            'keyword': keyword,
+            'page': page,
+            'per_page': per_page,
+        }
     ret = requests.get(url, params=params)
     if ret.status_code == 200:
         data = ret.json()

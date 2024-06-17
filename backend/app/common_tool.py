@@ -43,9 +43,7 @@ def recommend_questions(scenes: Annotated[str, "输入推荐问题场景，比�
         场景问答：PR详情、PR Review
         场景问答：社区数据 ,保留该tool输出格式
     """
-    # 社区贡献
-    # 社区数据
-    # PR相关
+    # 场景问答：PR详情、PR Review
     pr_scenes = "<div class=\"chat-question-content\">" \
                 "<div class=\"chat-question-desc\">关于 PR信息 你可以问我任何问题,也可以尝试点击以下问题开始：</div>" \
                 "<div class=\"chat-question-list\">" \
@@ -56,19 +54,18 @@ def recommend_questions(scenes: Annotated[str, "输入推荐问题场景，比�
                 "SIG组最近一次提交的PR，并找到该PR对应SIG的maintainer，发邮件催促maintainer检视该PR</div>" \
                 "</div>" \
                 "</div>"
-    # Issue相关
-    # SIG信息
+    # 场景问答：SIG信息
     sig_scene = "<div class=\"chat-question-content\">" \
                 "<div class=\"chat-question-desc\">关于 SIG信息 你可以问我任何问题,也可以尝试点击以下问题开始：</div>" \
                 "<div class=\"chat-question-list\">" \
                 "<div class=\"chat-question-list-item\">社区有哪些SIG组</div>" \
-                "<div class=\"chat-question-list-item\">查询QA SIG组的仓库清单</div>" \
+                "<div class=\"chat-question-list-item\">查询CloudNative SIG组的仓库清单，并以表格的形式展示</div>" \
                 "<div class=\"chat-question-list-item\">最近一个月 QA SIG组最活跃的开发者是哪些人</div>" \
                 "<div class=\"chat-question-list-item\">查询Infra SIG组主要方向是什么</div>" \
                 "<div class=\"chat-question-list-item\">检索Infra SIG组的maintainer和committer联系方式</div>" \
                 "</div>" \
                 "</div>"
-
+    # 场景问答：会议查询以及预定
     meeting_scene = "<div class=\"chat-question-content\">" \
                     "<div class=\"chat-question-desc\">关于 会议信息 你可以问我任何问题,也可以尝试点击以下问题开始：</div>" \
                     "<div class=\"chat-question-list\">" \
@@ -76,7 +73,7 @@ def recommend_questions(scenes: Annotated[str, "输入推荐问题场景，比�
                     "<div class=\"chat-question-list-item\">查询QA SIG组近期的会议情况，并且以表格展示</div>" \
                     "</div>" \
                     "</div>"
-
+    # 场景问答：社区贡献
     community_contribute_scene = "<div class=\"chat-question-content\">" \
                                  "<div class=\"chat-question-desc\">关于 社区贡献 你可以问我任何问题,也可以尝试点击以下问题开始：</div>" \
                                  "<div class=\"chat-question-list\">" \
@@ -86,10 +83,11 @@ def recommend_questions(scenes: Annotated[str, "输入推荐问题场景，比�
                                  "<div class=\"chat-question-list-item\">获取openGuass社区,QA SIG组中的comment贡献</div>" \
                                  "</div>" \
                                  "</div>"
+    # 场景问答：社区数据
     community_data_scene = "<div class=\"chat-question-content\">" \
                            "<div class=\"chat-question-desc\">关于 社区数据 你可以问我任何问题,也可以尝试点击以下问题开始：</div>" \
                            "<div class=\"chat-question-list\">" \
-                           "<div class=\"chat-question-list-item\">openguass社区中有哪些SIG组</div>" \
+                           "<div class=\"chat-question-list-item\">openguass社区中一共有多少代码仓</div>" \
                            "<div class=\"chat-question-list-item\">openguass社区中，一共有多少位issue指派者," \
                            "获取10个issue的指派者信息</div>" \
                            "<div class=\"chat-question-list-item\">openguass社区中，一共有多少位PR贡献者," \
