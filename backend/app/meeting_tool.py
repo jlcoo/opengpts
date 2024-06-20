@@ -13,9 +13,9 @@ def get_meetinfo_by_group(
     day: Annotated[int, "会议系统最新的天数."] = 5,
 ):
     """
-    - 约束: 如果上下文有时间信息，先调用now_time_tool获取一下当前时间,上下文有openGuass社区信息直接调用get_meetinfo_by_group
+    - 约束: 如果上下文有时间信息，先调用now_time_tool获取一下当前时间,上下文有openGauss社区信息直接调用get_meetinfo_by_group
     """
-    if group == 'all' or group == 'openGuass':
+    if group == 'all' or group == 'openGauss':
         group = ''
     url = base_meeting_url + 'meetingsdata/'
     params = {

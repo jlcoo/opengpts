@@ -69,7 +69,7 @@ def recommend_questions(scenes: Annotated[str, "输入推荐问题场景，比�
     meeting_scene = "<div class=\"chat-question-content\">" \
                     "<div class=\"chat-question-desc\">关于 会议信息 你可以问我任何问题,也可以尝试点击以下问题开始：</div>" \
                     "<div class=\"chat-question-list\">" \
-                    "<div class=\"chat-question-list-item\">openGuass社区最近3次会议是哪些,并且以表格展示</div>" \
+                    "<div class=\"chat-question-list-item\">openGauss社区最近3次会议是哪些,并且以表格展示</div>" \
                     "<div class=\"chat-question-list-item\">查询QA SIG组近期的会议情况，并且以表格展示</div>" \
                     "</div>" \
                     "</div>"
@@ -77,20 +77,20 @@ def recommend_questions(scenes: Annotated[str, "输入推荐问题场景，比�
     community_contribute_scene = "<div class=\"chat-question-content\">" \
                                  "<div class=\"chat-question-desc\">关于 社区贡献 你可以问我任何问题,也可以尝试点击以下问题开始：</div>" \
                                  "<div class=\"chat-question-list\">" \
-                                 "<div class=\"chat-question-list-item\">获取openGuass社区贡献指南</div>" \
-                                 "<div class=\"chat-question-list-item\">获取openGuass社区,QA SIG组中的pr贡献</div>" \
-                                 "<div class=\"chat-question-list-item\">获取openGuass社区,QA SIG组中的issue贡献</div>" \
-                                 "<div class=\"chat-question-list-item\">获取openGuass社区,QA SIG组中的comment贡献</div>" \
+                                 "<div class=\"chat-question-list-item\">获取openGauss社区贡献指南</div>" \
+                                 "<div class=\"chat-question-list-item\">获取openGauss社区,QA SIG组中的pr贡献</div>" \
+                                 "<div class=\"chat-question-list-item\">获取openGauss社区,QA SIG组中的issue贡献</div>" \
+                                 "<div class=\"chat-question-list-item\">获取openGauss社区,QA SIG组中的comment贡献</div>" \
                                  "</div>" \
                                  "</div>"
     # 场景问答：社区数据
     community_data_scene = "<div class=\"chat-question-content\">" \
                            "<div class=\"chat-question-desc\">关于 社区数据 你可以问我任何问题,也可以尝试点击以下问题开始：</div>" \
                            "<div class=\"chat-question-list\">" \
-                           "<div class=\"chat-question-list-item\">openguass社区中一共有多少代码仓</div>" \
-                           "<div class=\"chat-question-list-item\">openguass社区中，一共有多少位issue指派者," \
+                           "<div class=\"chat-question-list-item\">openGauss社区中一共有多少代码仓</div>" \
+                           "<div class=\"chat-question-list-item\">openGauss社区中，一共有多少位issue指派者," \
                            "获取10个issue的指派者信息</div>" \
-                           "<div class=\"chat-question-list-item\">openguass社区中，一共有多少位PR贡献者," \
+                           "<div class=\"chat-question-list-item\">openGauss社区中，一共有多少位PR贡献者," \
                            "获取10个PR贡献者信息</div>" \
                            "</div>" \
                            "</div>"
