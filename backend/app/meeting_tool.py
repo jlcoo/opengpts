@@ -9,15 +9,15 @@ base_meeting_url = os.getenv('MEET_BASE_URL')
 
 @tool
 def get_meetinfo_by_group(
-    group: Annotated[str, "指定sig,查看该sig组的会议议程详细."] = '',
-    day: Annotated[int, "会议系统最新的天数."] = 5,
+    group: Annotated[str, "指定sig,查看该sig组的会议议程详细, 默认是查询会议系统的所有信息."] = 'all',
+    day: Annotated[int, "会议系统最新的次数."] = 1,
 ):
     """
-    - 约束: 如果上下文有时间信息，先调用now_time_tool获取一下当前时间,上下文有openGauss社区信息直接调用get_meetinfo_by_group
+    - 约束: 如果上下文有时间信息，先调用now_time_tool获取一下当前时间,上下文有openEuler社区信息直接调用get_meetinfo_by_group
     """
-    if group == 'all' or group == 'openGauss':
-        group = ''
-    url = base_meeting_url + 'meetingsdata/'
+    if group == 'all' or group == 'openEuler':
+        return "请输入正确的sig组信息"
+    url = base_meeting_url + group + '/'
     params = {
         'group': group,
     }
@@ -29,9 +29,9 @@ def get_meetinfo_by_group(
             return datetime.strptime(date_str, "%Y-%m-%d")
 
         # 按照日期降序排序tableData
-        if data['tableData']:
-            sorted_table_data = sorted(data["tableData"], key=lambda x: parse_date(x["date"]), reverse=True)
-            data['tableData'] = sorted_table_data[:day]
+        if data['data']:
+            sorted_table_data = sorted(data["data"], key=lambda x: parse_date(x["date"]), reverse=True)
+            data['data'] = sorted_table_data[:day]
     else:
         #raise Exception(f"API Request failed with status code: {ret.status_code}")
         return "参数错误，请重试，温馨提示，输入信息请尽量准确！status code: {}".format(ret.status_code)
@@ -81,7 +81,7 @@ def create_a_meeting(
         'start': time_start,
         'topic': topic
     }
-    return "会议预定功能请移步到openGauss官网页面进行操作，会议系统在官网的社区会议板块，openGauss的官网地址为: https://opengauss.org/zh/"
+    return "会议预定功能请移步到openEuler官网页面进行操作，会议系统在官网的社区会议板块，openEuler的官网地址为: https://openEuler.org/zh/"
     res = requests.post(url,
             headers={'Content-Type': 'application/json;charset=UTF-8',
                      'Authorization': 'Bearer {}'.format(token)},

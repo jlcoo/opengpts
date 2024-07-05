@@ -74,7 +74,7 @@ def get_pulls_repos(
 @tool
 def get_pulls_detail_info(
     sig: Annotated[str, "PR的SIG组，比如Infra."],
-    org: Annotated[str, "Pull Request所属组织，比如openeuler/opengauss."] = os.getenv('COMMUNITY'),
+    org: Annotated[str, "Pull Request所属组织，比如openeuler/openEuler."] = os.getenv('COMMUNITY'),
     repo: Annotated[str, "PR的所归属的项目或代码仓，比如openeuler/ft_mmi, repo需要加上openeuler前缀"] = '',
     state: Annotated[str, "PR的当前的状态, 该值可以是open、merged、closed, 默认不填."] = '',
     ref: Annotated[str, "Pull Request指定的分支."] = '',
@@ -128,7 +128,7 @@ def get_issue_assignees(
     """
     global base_pulls_url
     url = base_pulls_url + "assignees"
-    if keyword == 'all' or keyword == 'total' or keyword == 'opengauss':
+    if keyword == 'all' or keyword == 'total' or keyword == 'openEuler':
         keyword = ''
     # Parameters for the request
     params = {
@@ -156,7 +156,7 @@ def get_pulls_authors(
     # 先直接 return,[TODO]接口OK后需要删除
     global base_pulls_url
     url = base_pulls_url + "authors"
-    if keyword == 'all' or keyword == 'total' or keyword == 'opengauss':
+    if keyword == 'all' or keyword == 'total' or keyword == 'openEuler':
         keyword = ''
     # Parameters for the request
     params = {

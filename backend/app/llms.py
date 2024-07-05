@@ -35,14 +35,19 @@ def get_openai_llm(model: str = "gpt-3.5-turbo", azure: bool = False):
             )
             # llm = ChatOpenAI(
             #     temperature=0,
-            #     model="glm-4-airx",
-            #     openai_api_key="xxxxxxx
+            #     model="glm-4-alltools",
+            #     openai_api_key="xxxx",
             #     openai_api_base="https://open.bigmodel.cn/api/paas/v4/")
             # llm = ChatOpenAI(temperature=0,
             #     # model="moonshot-v1-32k",
             #     model="moonshot-v1-8k",
             #     openai_api_key="xxxxx",
             #     openai_api_base="https://api.moonshot.cn/v1/")
+            # llm = ChatOpenAI(temperature=0,
+            #     model="glm-4",
+            #     openai_api_key="sk-BQnstDXut5uTHmMi2745110635744cC884F72412804e25E5",
+            #     openai_api_base="http://localhost:3000/v1")
+            # llm = ChatOpenAI(base_url="http://116.204.68.8:9997/v1", api_key="not used actually", model="qwen2-instruct")
         except Exception as e:
             logger.error(
                 f"Failed to instantiate ChatOpenAI due to: {str(e)}. Falling back to AzureChatOpenAI."

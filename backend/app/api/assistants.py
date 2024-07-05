@@ -93,7 +93,7 @@ async def delete_assistant(
 async def _create_default_assistant(user_id: str, name: str) -> Assistant:
     """create default assistant"""
     # 复用 gitee_name 作为 assistant 的name
-    assistant_name = 'default_opengauss'
+    assistant_name = 'default_openEuler'
     self_info = ""
     if name:
         assistant_name = name
@@ -259,7 +259,7 @@ async def _create_default_assistant(user_id: str, name: str) -> Assistant:
                         "id": "22",
                         "type": "web_loader",
                         "name": "get web loader by url",
-                        "description": "爬取指定URL的内容，获取openGauss的社区贡献指南非常有用",
+                        "description": "爬取指定URL的内容，获取openEuler的社区贡献指南非常有用",
                         "config": {}
                     },
                     {
@@ -280,7 +280,7 @@ async def _create_default_assistant(user_id: str, name: str) -> Assistant:
                         "id": "25",
                         "type": "safety_filter",
                         "name": "filter unsafety input",
-                        "description": "过滤非openGauss领域的问题",
+                        "description": "过滤非openEuler领域的问题",
                         "config": {}
                     }],
             "type==chat_retrieval/llm_type":"GPT 3.5 Turbo",

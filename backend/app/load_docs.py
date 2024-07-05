@@ -53,7 +53,7 @@ def get_md_files_sections():
         execute_cmd = "cd {} && git pull --rebase && cd -".format(tc_path)
     else:
         # 不存在先clone
-        execute_cmd = "cd {} && git clone https://gitee.com/opengauss/tc && cd -".format(base_dirs)
+        execute_cmd = "cd {} && git clone https://gitee.com/openEuler/tc && cd -".format(base_dirs)
     # print(execute_cmd)
     # 使用 subprocess.run 执行命令
     result = subprocess.run(execute_cmd, shell=True, stdout=subprocess.PIPE,

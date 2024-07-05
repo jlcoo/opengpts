@@ -87,7 +87,7 @@ def query_community_all_sigs(
     - 功能介绍：获取所有开源社区下所有sig组名称
     """
     url = datastat_base_url + 'name'
-    # url = 'https://datastat-opengauss.osinfra.cn/query/sig/' + 'name'
+    # url = 'https://datastat-openEuler.osinfra.cn/query/sig/' + 'name'
     params = {
         'community': os_community,
     }
@@ -106,9 +106,9 @@ def read_readme_content_(
     sig: Annotated[str, "指定该开源社区下的某个sig组, 比如Infra."] = 'all',
 ):
     """
-    - 功能介绍：opengauss社区通过配置文件readme.md获取sig组下的详细内容，比如某个sig组下的maintainers、committers等详细信息，
+    - 功能介绍：openEuler社区通过配置文件readme.md获取sig组下的详细内容，比如某个sig组下的maintainers、committers等详细信息，
         特别是获取检视人 reviewers 的联系方式 email 时特别有用
-    - 限制: 只对 opengauss 提供该方法，并且优先级最高
+    - 限制: 只对 openEuler 提供该方法，并且优先级最高
     """
     base_dirs = base_tc_path + os_community + '/'
     if not os.path.exists(base_dirs):
@@ -131,7 +131,7 @@ def read_readme_content_(
         execute_cmd = "cd {} && git pull --rebase && cd -".format(tc_path)
     else:
         # 不存在先clone
-        execute_cmd = "cd {} && git clone https://gitee.com/opengauss/tc && cd -".format(base_dirs)
+        execute_cmd = "cd {} && git clone https://gitee.com/openEuler/tc && cd -".format(base_dirs)
     # print(execute_cmd)
     # 使用 subprocess.run 执行命令
     result = subprocess.run(execute_cmd, shell=True, stdout=subprocess.PIPE,
@@ -140,7 +140,7 @@ def read_readme_content_(
         raise RuntimeError("clone object failed, err:{}".format(result.stderr))
 
     if not os.path.exists(filename):
-        return "该 {} {} 在 https://gitee.com/opengauss/tc 不存在，先调用query_community_all_sigs"\
+        return "该 {} {} 在 https://gitee.com/openEuler/tc 不存在，先调用query_community_all_sigs"\
                "忽略大小写匹配该sig组，如果还是未能匹配上结束该轮对话，请重新输入".format(sig, filename)
 
     # 打开文件并读取内容
@@ -156,9 +156,9 @@ def read_readme_content(
     sig: Annotated[str, "指定该开源社区下的某个sig组, 如果没有指定就会返回该开源社区的所有信息."] = 'all',
 ):
     """
-    - 功能介绍：opengauss社区通过配置文件readme.md获取sig组下的详细内容，比如某个sig组下的maintainers、committers等详细信息，
+    - 功能介绍：openEuler社区通过配置文件readme.md获取sig组下的详细内容，比如某个sig组下的maintainers、committers等详细信息，
         特别是获取检视人 reviewers 的联系方式 email 时特别有用
-    - 限制: 只对 opengauss 提供该方法，并且优先级最高
+    - 限制: 只对 openEuler 提供该方法，并且优先级最高
     """
     with lock:
         return read_readme_content_(sig)

@@ -232,7 +232,7 @@ class WebLoader(BaseTool):
     type: AvailableTools = Field(AvailableTools.WEB_LOADER, const=True)
     name: str = Field("get web loader by url", const=True)
     description: str = Field(
-        "爬取指定URL的内容，获取openGauss的社区贡献指南非常有用",
+        "爬取指定URL的内容，获取openEuler的社区贡献指南非常有用",
         const=True,
     )
 
@@ -256,7 +256,7 @@ class SafetyFilter(BaseTool):
     type: AvailableTools = Field(AvailableTools.SAFETY_FILTER, const=True)
     name: str = Field("filter unsafety input", const=True)
     description: str = Field(
-        "过滤非openGauss领域的问题",
+        "过滤非openEuler领域的问题",
         const=True,
     )
 
@@ -265,11 +265,11 @@ If the user is referencing particular files, that is often a good hint that info
 If the user asks a vague question, they are likely meaning to look up info from this retriever, and you should call it!"""
 
 PUBLIC_RETRIEVAL_DES = """"
-- Role: openGauss社区贡献者和维护者信息检索专家, 高优先级使用该搜索工具
-- Background: 用户需要了解openGauss开源社区中特定项目的committer和maintainer信息。
-- Profile: 作为openGauss社区的资深成员，您对社区的贡献者和维护者信息有深入的了解。
+- Role: openEuler社区贡献者和维护者信息检索专家, 高优先级使用该搜索工具
+- Background: 用户需要了解openEuler开源社区中特定项目的committer和maintainer信息。
+- Profile: 作为openEuler社区的资深成员，您对社区的贡献者和维护者信息有深入的了解。
 - Skills: 社区知识、信息检索、数据库管理、成员角色识别。
-- Goals: 提供openGauss社区中特定项目的committer和maintainer的详细信息。
+- Goals: 提供openEuler社区中特定项目的committer和maintainer的详细信息。
 - Constrains: 确保提供的信息最新、最准确，并且遵守社区的隐私政策和信息披露规则，社区领域知识优先检索，未检索到的再调用其他工具
 - OutputFormat: 结合检索到的社区贡献者和维护者信息，生成详细的列表或描述。
 - Workflow:
@@ -279,7 +279,7 @@ PUBLIC_RETRIEVAL_DES = """"
 - Examples:
   用户问题：Infra SIG 组的 Maintainer 是谁？
   生成回答：根据查询结果，Infra SIG 组的 Maintainer 是钟君（@zhongjun2，jun.zhongjun2@gmail.com）。如果您有其他问题或需要进一步的信息，请随时告诉我！
-- Initialization: 欢迎咨询openGauss社区贡献者和维护者信息。请提供您想要查询的项目或版本，我将为您提供详细的信息。
+- Initialization: 欢迎咨询openEuler社区贡献者和维护者信息。请提供您想要查询的项目或版本，我将为您提供详细的信息。
 """
 
 
@@ -330,7 +330,7 @@ def _get_datastat_contribute():
 
 @lru_cache(maxsize=3)
 def _get_datastat_sig_detail():
-    if os.getenv('COMMUNITY') != "opengauss":
+    if os.getenv('COMMUNITY') != "openEuler":
         return query_community_detail_info
     else:
         return read_readme_content
